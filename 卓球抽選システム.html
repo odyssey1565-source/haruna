@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏓 卓球練習 参加費無料 抽選会！</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #fff;
+    }
+
+    /* 背景の卓球ボール */
+    .bg-balls {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .bg-ball {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff5, #e86c1a33);
+      border: 2px solid #e86c1a22;
+      animation: floatBall linear infinite;
+    }
+
+    @keyframes floatBall {
+      0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* ヘッダー */
+    header {
+      text-align: center;
+      padding: 40px 0 30px;
+    }
+    .header-emoji {
+      font-size: 4rem;
+      display: block;
+      animation: bounce 1.5s ease-in-out infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+    header h1 {
+      font-size: clamp(1.6rem, 5vw, 2.5rem);
+      margin-top: 12px;
+      background: linear-gradient(90deg, #f7c59f, #e86c1a, #f7c59f);
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: 0% }
+      100% { background-position: 200% }
+    }
+    header p {
+      color: #a0b4d0;
+      margin-top: 8px;
+      font-size: 1rem;
+    }
+
+    /* カード共通 */
+    .card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(12px);
+    }
+    .card h2 {
+      font-size: 1.1rem;
+      color: #f7c59f;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 参加者入力 */
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .input-row input {
+      flex: 1;
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 2px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .input-row input::placeholder { color: rgba(255,255,255,0.35); }
+    .input-row input:focus { border-color: #e86c1a; }
+
+    .btn {
+      padding: 14px 22px;
+      border-radius: 12px;
+      border: none;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.95); }
+    .btn-add {
+      background: linear-gradient(135deg, #e86c1a, #f7a830);
+      color: #fff;
+    }
+    .btn-add:hover { filter: brightness(1.15); }
+
+    /* 参加者リスト */
+    .participants-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .participant-chip {
+      background: rgba(232, 108, 26, 0.2);
+      border: 1px solid rgba(232, 108, 26, 0.5);
+      border-radius: 50px;
+      padding: 8px 16px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .chip-num {
+      background: #e86c1a;
+      color: #fff;
+      border-radius: 50%;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+    .chip-delete {
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+      font-size: 0.85rem;
+    }
+    .chip-delete:hover { opacity: 1; }
+
+    .empty-hint {
+      text-align: center;
+      color: rgba(255,255,255,0.3);
+      padding: 20px;
+      font-size: 0.9rem;
+    }
+
+    /* 抽選ボタン */
+    .lottery-section {
+      text-align: center;
+      padding: 10px 0;
+    }
+    .btn-lottery {
+      background: linear-gradient(135deg, #4a0080, #9b59b6, #e86c1a);
+      color: #fff;
+      font-size: 1.3rem;
+      padding: 20px 50px;
+      border-radius: 60px;
+      box-shadow: 0 8px 30px rgba(155, 89, 182, 0.5);
+      transition: all 0.3s;
+      animation: pulse-btn 2s ease-in-out infinite;
+    }
+    @keyframes pulse-btn {
+      0%, 100% { box-shadow: 0 8px 30px rgba(155, 89, 182, 0.5); }
+      50% { box-shadow: 0 8px 50px rgba(232, 108, 26, 0.8); }
+    }
+    .btn-lottery:hover {
+      transform: translateY(-3px) scale(1.05);
+      filter: brightness(1.2);
+    }
+    .btn-lottery:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      animation: none;
+      transform: none;
+    }
+    .count-badge {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: #a0b4d0;
+    }
+
+    /* ルーレット */
+    #roulette-area {
+      display: none;
+      text-align: center;
+      padding: 10px;
+    }
+    .roulette-name {
+      font-size: clamp(2rem, 8vw, 4rem);
+      font-weight: 900;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px;
+      border: 2px solid rgba(255,255,255,0.1);
+      letter-spacing: 2px;
+      transition: color 0.05s;
+    }
+    .roulette-label {
+      color: #a0b4d0;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    /* 結果モーダル */
+    #result-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.75);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    #result-overlay.show { display: flex; }
+
+    .result-card {
+      background: linear-gradient(135deg, #1a1a3e, #2d1b69);
+      border: 2px solid rgba(255,215,0,0.5);
+      border-radius: 28px;
+      padding: 50px 40px;
+      text-align: center;
+      max-width: 480px;
+      width: 90%;
+      animation: resultPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    @keyframes resultPop {
+      from { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+      to { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    .result-crown { font-size: 4rem; animation: crownBounce 0.8s ease-in-out infinite alternate; }
+    @keyframes crownBounce {
+      from { transform: translateY(0) rotate(-5deg); }
+      to { transform: translateY(-10px) rotate(5deg); }
+    }
+    .result-label {
+      font-size: 1.1rem;
+      color: #ffd700;
+      margin: 16px 0 8px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .result-name {
+      font-size: clamp(2rem, 7vw, 3.5rem);
+      font-weight: 900;
+      background: linear-gradient(90deg, #ffd700, #ff8c00, #ffd700);
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 2s linear infinite;
+      margin-bottom: 12px;
+    }
+    .result-sub {
+      color: #a0b4d0;
+      font-size: 1rem;
+      margin-bottom: 30px;
+    }
+    .btn-close {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 12px 32px;
+      border-radius: 50px;
+      font-size: 1rem;
+    }
+    .btn-close:hover { background: rgba(255,255,255,0.2); }
+
+    /* 紙吹雪 */
+    .confetti-piece {
+      position: fixed;
+      width: 10px;
+      height: 14px;
+      top: -20px;
+      border-radius: 2px;
+      animation: confettiFall linear forwards;
+      z-index: 200;
+      pointer-events: none;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(0) rotateZ(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotateZ(720deg); opacity: 0; }
+    }
+
+    /* リセットボタン */
+    .btn-reset {
+      background: transparent;
+      color: rgba(255,255,255,0.4);
+      border: 1px solid rgba(255,255,255,0.2);
+      font-size: 0.85rem;
+      padding: 8px 18px;
+      margin-top: 8px;
+    }
+    .btn-reset:hover { color: #fff; border-color: rgba(255,255,255,0.5); }
+
+    /* フッター */
+    footer {
+      text-align: center;
+      padding: 30px 0;
+      color: rgba(255,255,255,0.2);
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 20px 16px; }
+      .btn-lottery { padding: 18px 36px; font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 背景ボール -->
+<div class="bg-balls" id="bgBalls"></div>
+
+<div class="container">
+  <header>
+    <span class="header-emoji">🏓</span>
+    <h1>卓球練習 参加費無料 抽選会！</h1>
+    <p>今日のラッキープレイヤーは誰だ？</p>
+  </header>
+
+  <!-- 参加者入力 -->
+  <div class="card">
+    <h2>👥 参加者を追加</h2>
+    <div class="input-row">
+      <input type="text" id="nameInput" placeholder="名前を入力..." maxlength="20" />
+      <button class="btn btn-add" onclick="addParticipant()">追加 ＋</button>
+    </div>
+    <div class="participants-grid" id="participantsList">
+      <div class="empty-hint" id="emptyHint">参加者を追加しましょう！</div>
+    </div>
+  </div>
+
+  <!-- 抽選ルーレット -->
+  <div class="card" id="rouletteCard">
+    <h2>🎰 抽選中...</h2>
+    <div id="roulette-area">
+      <p class="roulette-label">選ばれし者は...</p>
+      <div class="roulette-name" id="rouletteName">？？？</div>
+    </div>
+  </div>
+
+  <!-- 抽選ボタン -->
+  <div class="lottery-section">
+    <button class="btn btn-lottery" id="lotteryBtn" onclick="startLottery()" disabled>
+      🎯 抽選スタート！
+    </button>
+    <p class="count-badge" id="countBadge">参加者を2名以上追加してください</p>
+    <br>
+    <button class="btn btn-reset" onclick="resetAll()">🔄 全員リセット</button>
+  </div>
+
+  <footer>🏓 卓球練習 参加費無料 抽選システム</footer>
+</div>
+
+<!-- 結果オーバーレイ -->
+<div id="result-overlay">
+  <div class="result-card">
+    <div class="result-crown">👑</div>
+    <p class="result-label">🎉 当選者 🎉</p>
+    <div class="result-name" id="resultName"></div>
+    <p class="result-sub">参加費無料おめでとうございます！🏓</p>
+    <button class="btn btn-close" onclick="closeResult()">閉じる</button>
+  </div>
+</div>
+
+<script>
+  let participants = [];
+  let isRunning = false;
+
+  // 背景ボール生成
+  function createBgBalls() {
+    const container = document.getElementById('bgBalls');
+    for (let i = 0; i < 15; i++) {
+      const ball = document.createElement('div');
+      ball.className = 'bg-ball';
+      const size = Math.random() * 40 + 20;
+      ball.style.cssText = `
+        width: ${size}px;
+        height: ${size}px;
+        left: ${Math.random() * 100}%;
+        animation-duration: ${Math.random() * 10 + 8}s;
+        animation-delay: ${Math.random() * 10}s;
+      `;
+      container.appendChild(ball);
+    }
+  }
+  createBgBalls();
+
+  // 参加者追加
+  function addParticipant() {
+    const input = document.getElementById('nameInput');
+    const name = input.value.trim();
+    if (!name) { input.focus(); return; }
+    if (participants.includes(name)) {
+      input.style.borderColor = '#e74c3c';
+      setTimeout(() => input.style.borderColor = '', 1000);
+      return;
+    }
+    participants.push(name);
+    input.value = '';
+    input.focus();
+    renderParticipants();
+    updateLotteryBtn();
+  }
+
+  // 参加者削除
+  function removeParticipant(idx) {
+    participants.splice(idx, 1);
+    renderParticipants();
+    updateLotteryBtn();
+  }
+
+  // 描画
+  function renderParticipants() {
+    const list = document.getElementById('participantsList');
+    const hint = document.getElementById('emptyHint');
+    if (participants.length === 0) {
+      list.innerHTML = '<div class="empty-hint" id="emptyHint">参加者を追加しましょう！</div>';
+      return;
+    }
+    list.innerHTML = participants.map((name, i) => `
+      <div class="participant-chip">
+        <span class="chip-num">${i + 1}</span>
+        <span>${name}</span>
+        <span class="chip-delete" onclick="removeParticipant(${i})">✕</span>
+      </div>
+    `).join('');
+  }
+
+  // ボタン状態更新
+  function updateLotteryBtn() {
+    const btn = document.getElementById('lotteryBtn');
+    const badge = document.getElementById('countBadge');
+    if (participants.length < 2) {
+      btn.disabled = true;
+      badge.textContent = participants.length === 1
+        ? 'あと1名追加すると抽選できます'
+        : '参加者を2名以上追加してください';
+    } else {
+      btn.disabled = false;
+      badge.textContent = `${participants.length}名で抽選します`;
+    }
+  }
+
+  // Enterキー対応
+  document.getElementById('nameInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addParticipant();
+  });
+
+  // 抽選開始
+  function startLottery() {
+    if (isRunning || participants.length < 2) return;
+    isRunning = true;
+    document.getElementById('lotteryBtn').disabled = true;
+
+    const rouletteArea = document.getElementById('roulette-area');
+    const rouletteCard = document.getElementById('rouletteCard');
+    const rouletteName = document.getElementById('rouletteName');
+    rouletteArea.style.display = 'block';
+
+    // ルーレットアニメーション
+    const totalDuration = 4000;
+    const startTime = Date.now();
+    let interval = 80;
+    const colors = ['#e86c1a', '#9b59b6', '#3498db', '#2ecc71', '#f39c12', '#e74c3c'];
+    let colorIdx = 0;
+
+    function spin() {
+      const elapsed = Date.now() - startTime;
+      const progress = elapsed / totalDuration;
+
+      // ランダムに名前を表示
+      const randomName = participants[Math.floor(Math.random() * participants.length)];
+      rouletteName.textContent = randomName;
+      rouletteName.style.color = colors[colorIdx % colors.length];
+      colorIdx++;
+
+      // だんだんゆっくりになる
+      if (progress < 0.6) {
+        interval = 80;
+      } else if (progress < 0.8) {
+        interval = 150;
+      } else if (progress < 0.95) {
+        interval = 300;
+      } else {
+        interval = 500;
+      }
+
+      if (elapsed < totalDuration) {
+        setTimeout(spin, interval);
+      } else {
+        // 最終結果
+        const winner = participants[Math.floor(Math.random() * participants.length)];
+        rouletteName.textContent = winner;
+        rouletteName.style.color = '#ffd700';
+        setTimeout(() => showResult(winner), 600);
+      }
+    }
+    spin();
+  }
+
+  // 結果表示
+  function showResult(winner) {
+    document.getElementById('resultName').textContent = winner;
+    const overlay = document.getElementById('result-overlay');
+    overlay.classList.add('show');
+    launchConfetti();
+  }
+
+  // 閉じる
+  function closeResult() {
+    document.getElementById('result-overlay').classList.remove('show');
+    isRunning = false;
+    document.getElementById('lotteryBtn').disabled = participants.length < 2;
+  }
+
+  // 紙吹雪
+  function launchConfetti() {
+    const colors = ['#ffd700','#ff6b6b','#4ecdc4','#45b7d1','#f7c59f','#e86c1a','#9b59b6','#2ecc71'];
+    for (let i = 0; i < 120; i++) {
+      setTimeout(() => {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.cssText = `
+          left: ${Math.random() * 100}vw;
+          background: ${colors[Math.floor(Math.random() * colors.length)]};
+          animation-duration: ${Math.random() * 2 + 2}s;
+          animation-delay: ${Math.random() * 1.5}s;
+          transform: rotate(${Math.random() * 360}deg);
+          width: ${Math.random() * 8 + 6}px;
+          height: ${Math.random() * 10 + 8}px;
+          border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+        `;
+        document.body.appendChild(piece);
+        setTimeout(() => piece.remove(), 5000);
+      }, i * 20);
+    }
+  }
+
+  // 全リセット
+  function resetAll() {
+    if (participants.length === 0) return;
+    if (!confirm('全員をリセットしますか？')) return;
+    participants = [];
+    renderParticipants();
+    updateLotteryBtn();
+    document.getElementById('roulette-area').style.display = 'none';
+    document.getElementById('rouletteName').textContent = '？？？';
+    isRunning = false;
+  }
+</script>
+</body>
+</html>
