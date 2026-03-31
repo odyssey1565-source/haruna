@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>haruna's works</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F4EF;
+    --ink: #1A1814;
+    --muted: #8A8479;
+    --accent: #C9581A;
+    --card-bg: #FFFFFF;
+    --border: #E2DDD6;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 0 24px 80px;
+  }
+
+  /* ヘッダー */
+  header {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 72px 0 48px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .header-left h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(40px, 8vw, 64px);
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+
+  .header-left h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .header-left p {
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 0.04em;
+  }
+
+  .header-right {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* グリッド */
+  .grid {
+    max-width: 720px;
+    margin: 48px auto 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  /* カード */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+    border-color: var(--accent);
+  }
+
+  .card:hover::before {
+    transform: scaleX(1);
+  }
+
+  .card-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: #FDF0E8;
+    padding: 4px 10px;
+    border-radius: 100px;
+    width: fit-content;
+  }
+
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    line-height: 1.2;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+    flex: 1;
+  }
+
+  .card-arrow {
+    font-size: 18px;
+    color: var(--accent);
+    align-self: flex-end;
+    transition: transform 0.2s ease;
+  }
+
+  .card:hover .card-arrow {
+    transform: translate(3px, -3px);
+  }
+
+  /* フッター */
+  footer {
+    max-width: 720px;
+    margin: 64px auto 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* フェードイン */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  header { animation: fadeUp 0.6s ease both; }
+  .card:nth-child(1) { animation: fadeUp 0.6s 0.1s ease both; }
+  .card:nth-child(2) { animation: fadeUp 0.6s 0.2s ease both; }
+  .card:nth-child(3) { animation: fadeUp 0.6s 0.3s ease both; }
+  .card:nth-child(4) { animation: fadeUp 0.6s 0.4s ease both; }
+  .card:nth-child(5) { animation: fadeUp 0.6s 0.5s ease both; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>haruna's<br><em>works</em></h1>
+    <p>Claudeで作ったWebアプリ集</p>
+  </div>
+  <div class="header-right">2026</div>
+</header>
+
+<div class="grid">
+
+  <a class="card" href="卓球抽選システム.html">
+    <span class="card-tag">システム</span>
+    <div class="card-title">卓球抽選システム</div>
+    <div class="card-desc">参加者を公平に抽選できるシステム。卓球大会の運営をスムーズに。</div>
+    <div class="card-arrow">↗</div>
+  </a>
+
+</div>
+
+<footer>
+  <span>haruna © 2026</span>
+  <span>Powered by GitHub Pages</span>
+</footer>
+
+</body>
+</html>
