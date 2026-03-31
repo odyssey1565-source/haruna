@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🐥 参加費無料 抽選会！</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Zen Maru Gothic', 'Hiragino Maru Gothic Pro', 'Yu Gothic', sans-serif;
+      background-color: #fffbf3;
+      background-image:
+        radial-gradient(circle at 10% 20%, #fff3e040 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, #fde8d840 0%, transparent 50%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #5a3520;
+    }
+
+    /* ========== 背景装飾 ========== */
+    .deco-fixed {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* 浮かぶ花びら */
+    .petal {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      animation: petalFloat linear infinite;
+      opacity: 0;
+    }
+    @keyframes petalFloat {
+      0%   { transform: translateY(110vh) rotate(0deg) scale(0.8); opacity: 0; }
+      5%   { opacity: 0.7; }
+      95%  { opacity: 0.7; }
+      100% { transform: translateY(-10vh) rotate(360deg) scale(1.1); opacity: 0; }
+    }
+
+    /* ========== レイアウト ========== */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px 20px 60px;
+    }
+
+    /* ========== ヘッダー ========== */
+    header {
+      text-align: center;
+      padding: 36px 0 28px;
+      position: relative;
+    }
+    .header-deco {
+      width: 100%;
+      max-width: 620px;
+      margin: 0 auto 10px;
+      display: block;
+    }
+    header h1 {
+      font-size: clamp(1.5rem, 5vw, 2.2rem);
+      font-weight: 900;
+      color: #c0693a;
+      letter-spacing: 2px;
+      text-shadow: 2px 3px 0 #f7d9c4;
+      margin-bottom: 6px;
+    }
+    header p {
+      font-size: 0.95rem;
+      color: #b07858;
+    }
+    /* ひよこマスコット */
+    .chick-header {
+      display: inline-block;
+      animation: chickBob 2s ease-in-out infinite;
+      margin-bottom: 8px;
+    }
+    @keyframes chickBob {
+      0%, 100% { transform: rotate(-5deg) translateY(0); }
+      50%       { transform: rotate(5deg) translateY(-8px); }
+    }
+
+    /* ========== カード共通 ========== */
+    .card {
+      background: #fff;
+      border: 3px solid #e8b99a;
+      border-radius: 28px;
+      padding: 26px 28px;
+      margin-bottom: 22px;
+      box-shadow: 4px 6px 0 #f0cdb8;
+      position: relative;
+      overflow: visible;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: 16px;
+      width: 60px; height: 3px;
+      background: #f5c49a;
+      border-radius: 2px;
+    }
+    .card h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #c0693a;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card h2 svg { flex-shrink: 0; }
+
+    /* ========== 入力エリア ========== */
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .input-row input {
+      flex: 1;
+      padding: 13px 18px;
+      border-radius: 50px;
+      border: 2.5px solid #e8b99a;
+      background: #fffbf5;
+      color: #5a3520;
+      font-size: 1rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .input-row input::placeholder { color: #d4a888; }
+    .input-row input:focus {
+      border-color: #e87d3a;
+      box-shadow: 0 0 0 3px #fde8d8;
+    }
+
+    .btn {
+      padding: 13px 22px;
+      border-radius: 50px;
+      border: 2.5px solid transparent;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.94) translateY(2px); }
+
+    .btn-add {
+      background: #f0a060;
+      border-color: #d4804a;
+      color: #fff;
+      box-shadow: 0 4px 0 #c06030;
+    }
+    .btn-add:hover {
+      background: #e8904a;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #c06030;
+    }
+
+    /* ========== 参加者チップ ========== */
+    .participants-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .participant-chip {
+      background: #fff8f0;
+      border: 2px solid #e8b99a;
+      border-radius: 50px;
+      padding: 7px 14px 7px 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #7a4535;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0) rotate(-10deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+    }
+    .chip-num {
+      background: #f0a060;
+      color: #fff;
+      border-radius: 50%;
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .chip-delete {
+      cursor: pointer;
+      color: #d4a888;
+      font-size: 0.8rem;
+      transition: color 0.2s, transform 0.2s;
+      line-height: 1;
+    }
+    .chip-delete:hover { color: #e06040; transform: scale(1.3); }
+
+    .empty-hint {
+      width: 100%;
+      text-align: center;
+      color: #d4b090;
+      padding: 16px;
+      font-size: 0.9rem;
+    }
+
+    /* ========== ルーレットエリア ========== */
+    #roulette-area {
+      display: none;
+      text-align: center;
+      padding: 8px 0;
+    }
+    .roulette-label {
+      color: #b07858;
+      margin-bottom: 14px;
+      font-size: 0.95rem;
+    }
+    .roulette-box {
+      background: #fff8f0;
+      border: 3px dashed #e8b99a;
+      border-radius: 22px;
+      padding: 22px 16px;
+      min-height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .roulette-box::before,
+    .roulette-box::after {
+      content: '🌸';
+      position: absolute;
+      font-size: 1.4rem;
+      opacity: 0.25;
+    }
+    .roulette-box::before { top: 8px; left: 12px; }
+    .roulette-box::after  { bottom: 8px; right: 12px; }
+
+    .roulette-name {
+      font-size: clamp(2rem, 8vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: 3px;
+      color: #c0693a;
+      transition: color 0.08s;
+      text-shadow: 2px 3px 0 #fde8d8;
+    }
+    .roulette-chick {
+      position: absolute;
+      right: 14px; bottom: 6px;
+      font-size: 1.6rem;
+      animation: chickWiggle 0.4s ease-in-out infinite;
+    }
+    @keyframes chickWiggle {
+      0%, 100% { transform: rotate(-8deg); }
+      50%       { transform: rotate(8deg); }
+    }
+
+    /* ========== 抽選ボタンエリア ========== */
+    .lottery-section {
+      text-align: center;
+      padding: 8px 0 4px;
+    }
+    .btn-lottery {
+      background: #f0a060;
+      border: 3px solid #d4804a;
+      color: #fff;
+      font-size: 1.25rem;
+      padding: 18px 48px;
+      border-radius: 60px;
+      box-shadow: 0 6px 0 #c06030;
+      transition: all 0.2s;
+      animation: lotteryPulse 2s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-lottery::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 60%);
+      border-radius: inherit;
+    }
+    @keyframes lotteryPulse {
+      0%, 100% { box-shadow: 0 6px 0 #c06030, 0 0 0 0 rgba(240,160,96,0); }
+      50%       { box-shadow: 0 6px 0 #c06030, 0 0 0 10px rgba(240,160,96,0); }
+    }
+    .btn-lottery:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 9px 0 #c06030;
+      background: #e8904a;
+    }
+    .btn-lottery:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 #c06030;
+    }
+    .btn-lottery:disabled {
+      background: #e8d0bc;
+      border-color: #d4bcaa;
+      box-shadow: 0 4px 0 #c4a890;
+      color: #b09880;
+      cursor: not-allowed;
+      animation: none;
+    }
+
+    .count-badge {
+      margin-top: 14px;
+      font-size: 0.88rem;
+      color: #b07858;
+    }
+    .btn-reset {
+      background: transparent;
+      color: #c4a080;
+      border: 2px solid #e8c8a8;
+      font-size: 0.82rem;
+      padding: 8px 20px;
+      margin-top: 12px;
+      border-radius: 50px;
+      font-family: inherit;
+    }
+    .btn-reset:hover { background: #fdf0e8; color: #a07050; }
+
+    /* ========== 結果モーダル ========== */
+    #result-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(90, 50, 20, 0.45);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+    }
+    #result-overlay.show { display: flex; }
+
+    .result-card {
+      background: #fffbf3;
+      border: 4px solid #e8b99a;
+      border-radius: 36px;
+      padding: 46px 38px 38px;
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
+      box-shadow: 8px 10px 0 #f0cdb8, 0 0 60px rgba(240,160,96,0.3);
+      animation: resultPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    /* 装飾コーナー */
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: -30px; left: -30px;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, #fde8d8 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .result-card::after {
+      content: '';
+      position: absolute;
+      bottom: -20px; right: -20px;
+      width: 100px; height: 100px;
+      background: radial-gradient(circle, #fde8d8 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    @keyframes resultPop {
+      from { transform: scale(0.4) rotate(-15deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg);     opacity: 1; }
+    }
+    .result-chick {
+      font-size: 4.5rem;
+      display: block;
+      animation: resultChickDance 0.6s ease-in-out infinite alternate;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    @keyframes resultChickDance {
+      from { transform: rotate(-12deg) scale(1); }
+      to   { transform: rotate(12deg) scale(1.1); }
+    }
+    .result-label {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #b07858;
+      letter-spacing: 4px;
+      margin-bottom: 10px;
+    }
+    .result-name {
+      font-size: clamp(2rem, 8vw, 3.2rem);
+      font-weight: 900;
+      color: #c0693a;
+      text-shadow: 3px 4px 0 #f7d9c4;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+    .result-free-badge {
+      display: inline-block;
+      background: #f0a060;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 8px 24px;
+      border-radius: 50px;
+      border: 2.5px solid #d4804a;
+      box-shadow: 0 4px 0 #c06030;
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 1;
+    }
+    .result-sub {
+      color: #b07858;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    .btn-close {
+      background: #fff;
+      color: #c0693a;
+      border: 2.5px solid #e8b99a;
+      font-family: inherit;
+      font-weight: 700;
+      padding: 12px 36px;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 0 #f0cdb8;
+      position: relative;
+      z-index: 1;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-close:hover {
+      background: #fdf0e8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #f0cdb8;
+    }
+
+    /* ========== 花びら紙吹雪 ========== */
+    .confetti-piece {
+      position: fixed;
+      top: -30px;
+      pointer-events: none;
+      z-index: 200;
+      animation: confettiFall linear forwards;
+      font-size: 1.2rem;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(0) rotate(0deg) scale(1);    opacity: 1; }
+      100% { transform: translateY(110vh) rotate(540deg) scale(0.5); opacity: 0; }
+    }
+
+    /* ========== フッター ========== */
+    footer {
+      text-align: center;
+      padding: 20px 0 10px;
+      color: #d4b090;
+      font-size: 0.78rem;
+    }
+
+    /* ========== SVGイラスト ========== */
+    .svg-corner-tl { position: fixed; top: 0; left: 0; width: 220px; pointer-events: none; z-index: 0; opacity: 0.55; }
+    .svg-corner-br { position: fixed; bottom: 0; right: 0; width: 260px; pointer-events: none; z-index: 0; opacity: 0.55; transform: scaleX(-1); }
+
+    @media (max-width: 480px) {
+      .card { padding: 20px 18px; }
+      .btn-lottery { font-size: 1.1rem; padding: 16px 36px; }
+      .result-card { padding: 36px 24px 30px; }
+      .svg-corner-tl, .svg-corner-br { width: 140px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 固定コーナー装飾 (SVG) -->
+<svg class="svg-corner-tl" viewBox="0 0 220 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- つる -->
+  <path d="M10 160 Q40 80 90 40 Q130 10 180 20" stroke="#7a4535" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M30 140 Q20 100 50 70" stroke="#7a4535" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M50 70 Q55 55 48 45" stroke="#7a4535" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  <!-- 葉っぱ -->
+  <ellipse cx="55" cy="50" rx="14" ry="8" fill="#7bbf5a" stroke="#5a9030" stroke-width="1.5" transform="rotate(-30 55 50)"/>
+  <ellipse cx="100" cy="30" rx="13" ry="7" fill="#6aaf4a" stroke="#4a8020" stroke-width="1.5" transform="rotate(20 100 30)"/>
+  <ellipse cx="145" cy="22" rx="12" ry="6" fill="#7bbf5a" stroke="#5a9030" stroke-width="1.5" transform="rotate(-10 145 22)"/>
+  <ellipse cx="30" cy="115" rx="11" ry="6" fill="#6aaf4a" stroke="#4a8020" stroke-width="1.5" transform="rotate(40 30 115)"/>
+  <!-- 花1 (大) -->
+  <circle cx="80" cy="58" r="10" fill="#e8956d" stroke="#7a4535" stroke-width="1.8"/>
+  <circle cx="80" cy="58" r="4" fill="#c06030" stroke="#7a4535" stroke-width="1.2"/>
+  <ellipse cx="80" cy="46" rx="6" ry="8" fill="#e8956d" stroke="#7a4535" stroke-width="1.5" transform="rotate(0 80 46)"/>
+  <ellipse cx="91" cy="53" rx="6" ry="8" fill="#e8956d" stroke="#7a4535" stroke-width="1.5" transform="rotate(60 91 53)"/>
+  <ellipse cx="91" cy="65" rx="6" ry="8" fill="#e8956d" stroke="#7a4535" stroke-width="1.5" transform="rotate(120 91 65)"/>
+  <ellipse cx="80" cy="70" rx="6" ry="8" fill="#e8956d" stroke="#7a4535" stroke-width="1.5" transform="rotate(180 80 70)"/>
+  <ellipse cx="69" cy="65" rx="6" ry="8" fill="#e8956d" stroke="#7a4535" stroke-width="1.5" transform="rotate(240 69 65)"/>
+  <ellipse cx="69" cy="53" rx="6" ry="8" fill="#e8956d" stroke="#7a4535" stroke-width="1.5" transform="rotate(300 69 53)"/>
+  <!-- 花2 (小) -->
+  <circle cx="155" cy="34" r="8" fill="#d4845a" stroke="#7a4535" stroke-width="1.5"/>
+  <circle cx="155" cy="34" r="3.5" fill="#b06030" stroke="#7a4535" stroke-width="1"/>
+  <ellipse cx="155" cy="25" rx="5" ry="7" fill="#d4845a" stroke="#7a4535" stroke-width="1.3" transform="rotate(0 155 25)"/>
+  <ellipse cx="163" cy="30" rx="5" ry="7" fill="#d4845a" stroke="#7a4535" stroke-width="1.3" transform="rotate(60 163 30)"/>
+  <ellipse cx="163" cy="40" rx="5" ry="7" fill="#d4845a" stroke="#7a4535" stroke-width="1.3" transform="rotate(120 163 40)"/>
+  <ellipse cx="155" cy="44" rx="5" ry="7" fill="#d4845a" stroke="#7a4535" stroke-width="1.3" transform="rotate(180 155 44)"/>
+  <ellipse cx="147" cy="40" rx="5" ry="7" fill="#d4845a" stroke="#7a4535" stroke-width="1.3" transform="rotate(240 147 40)"/>
+  <ellipse cx="147" cy="30" rx="5" ry="7" fill="#d4845a" stroke="#7a4535" stroke-width="1.3" transform="rotate(300 147 30)"/>
+  <!-- くるくるつる -->
+  <path d="M18 150 Q8 140 14 130 Q20 120 14 112" stroke="#7a4535" stroke-width="2" stroke-linecap="round" fill="none"/>
+</svg>
+
+<svg class="svg-corner-br" viewBox="0 0 260 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- ひよこ -->
+  <circle cx="160" cy="130" r="48" fill="#FFE030" stroke="#5a3520" stroke-width="3"/>
+  <circle cx="160" cy="96" r="34" fill="#FFE030" stroke="#5a3520" stroke-width="3"/>
+  <!-- ほっぺ -->
+  <ellipse cx="146" cy="102" rx="9" ry="7" fill="#f0a878" opacity="0.85"/>
+  <ellipse cx="174" cy="102" rx="9" ry="7" fill="#f0a878" opacity="0.85"/>
+  <!-- 目 -->
+  <circle cx="150" cy="96" r="5" fill="#3a2010" stroke="#3a2010" stroke-width="1"/>
+  <circle cx="170" cy="96" r="5" fill="#3a2010" stroke="#3a2010" stroke-width="1"/>
+  <circle cx="151.5" cy="94.5" r="2" fill="#fff"/>
+  <circle cx="171.5" cy="94.5" r="2" fill="#fff"/>
+  <!-- くちばし -->
+  <ellipse cx="160" cy="108" rx="8" ry="5" fill="#e87830" stroke="#5a3520" stroke-width="1.8"/>
+  <!-- 赤い鼻(点) -->
+  <circle cx="157" cy="107" r="2" fill="#e04020"/>
+  <!-- 足 -->
+  <path d="M145 176 L138 190 M148 192 L138 190 M128 190 L138 190" stroke="#5a3520" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M175 176 L182 190 M172 192 L182 190 M192 190 L182 190" stroke="#5a3520" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- つる -->
+  <path d="M10 200 Q60 150 110 120 Q150 95 200 80" stroke="#7a4535" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M40 210 Q35 180 60 165" stroke="#7a4535" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <!-- 葉 -->
+  <ellipse cx="65" cy="162" rx="13" ry="7" fill="#7bbf5a" stroke="#5a9030" stroke-width="1.5" transform="rotate(-40 65 162)"/>
+  <ellipse cx="115" cy="118" rx="12" ry="6" fill="#6aaf4a" stroke="#4a8020" stroke-width="1.5" transform="rotate(15 115 118)"/>
+  <!-- 花 -->
+  <circle cx="90" cy="145" r="9" fill="#c97a6a" stroke="#7a4535" stroke-width="1.8"/>
+  <circle cx="90" cy="145" r="4" fill="#a05040" stroke="#7a4535" stroke-width="1.2"/>
+  <ellipse cx="90" cy="135" rx="5.5" ry="7.5" fill="#c97a6a" stroke="#7a4535" stroke-width="1.4" transform="rotate(0 90 135)"/>
+  <ellipse cx="99" cy="140" rx="5.5" ry="7.5" fill="#c97a6a" stroke="#7a4535" stroke-width="1.4" transform="rotate(60 99 140)"/>
+  <ellipse cx="99" cy="151" rx="5.5" ry="7.5" fill="#c97a6a" stroke="#7a4535" stroke-width="1.4" transform="rotate(120 99 151)"/>
+  <ellipse cx="90" cy="156" rx="5.5" ry="7.5" fill="#c97a6a" stroke="#7a4535" stroke-width="1.4" transform="rotate(180 90 156)"/>
+  <ellipse cx="81" cy="151" rx="5.5" ry="7.5" fill="#c97a6a" stroke="#7a4535" stroke-width="1.4" transform="rotate(240 81 151)"/>
+  <ellipse cx="81" cy="140" rx="5.5" ry="7.5" fill="#c97a6a" stroke="#7a4535" stroke-width="1.4" transform="rotate(300 81 140)"/>
+  <!-- くるつる -->
+  <path d="M240 200 Q250 185 244 172 Q238 160 246 150" stroke="#7a4535" stroke-width="2" stroke-linecap="round" fill="none"/>
+</svg>
+
+<!-- 浮かぶ花びら（JS生成） -->
+<div id="petalContainer"></div>
+
+<div class="container">
+  <header>
+    <div class="chick-header">
+      <!-- SVGひよこ小 -->
+      <svg width="70" height="70" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="35" cy="42" r="22" fill="#FFE030" stroke="#5a3520" stroke-width="2.5"/>
+        <circle cx="35" cy="24" r="16" fill="#FFE030" stroke="#5a3520" stroke-width="2.5"/>
+        <ellipse cx="28" cy="27" rx="5" ry="4" fill="#f0a878" opacity="0.85"/>
+        <ellipse cx="42" cy="27" rx="5" ry="4" fill="#f0a878" opacity="0.85"/>
+        <circle cx="30" cy="23" r="3" fill="#3a2010"/>
+        <circle cx="40" cy="23" r="3" fill="#3a2010"/>
+        <circle cx="31" cy="22" r="1.2" fill="#fff"/>
+        <circle cx="41" cy="22" r="1.2" fill="#fff"/>
+        <ellipse cx="35" cy="31" rx="5" ry="3" fill="#e87830" stroke="#5a3520" stroke-width="1.5"/>
+        <circle cx="33.5" cy="30.5" r="1.2" fill="#e04020"/>
+        <path d="M28 62 L24 68 M26 69 L24 68 M22 68 L24 68" stroke="#5a3520" stroke-width="2" stroke-linecap="round"/>
+        <path d="M42 62 L46 68 M44 69 L46 68 M48 68 L46 68" stroke="#5a3520" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>🏓 卓球練習 参加費無料 抽選会！</h1>
+    <p>今日のラッキープレイヤーは誰かな？🌸</p>
+  </header>
+
+  <!-- 参加者入力 -->
+  <div class="card">
+    <h2>
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="8" cy="6" r="4" fill="#f0a060" stroke="#c06030" stroke-width="1.5"/><circle cx="14" cy="8" r="3" fill="#e8906a" stroke="#c06030" stroke-width="1.2"/><path d="M2 16c0-3 2.7-5 6-5s6 2 6 5" stroke="#c06030" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M14 11c2 .5 4 2 4 5" stroke="#c06030" stroke-width="1.3" stroke-linecap="round" fill="none"/></svg>
+      参加者を追加
+    </h2>
+    <div class="input-row">
+      <input type="text" id="nameInput" placeholder="名前を入力してね…" maxlength="20" />
+      <button class="btn btn-add" onclick="addParticipant()">追加 ＋</button>
+    </div>
+    <div class="participants-grid" id="participantsList">
+      <div class="empty-hint">🐥 まずは参加者を追加してね！</div>
+    </div>
+  </div>
+
+  <!-- 抽選ルーレット -->
+  <div class="card" id="rouletteCard">
+    <h2>
+      <svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8" fill="#f0a060" stroke="#c06030" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      抽選中...
+    </h2>
+    <div id="roulette-area">
+      <p class="roulette-label">✨ 選ばれし者は… ✨</p>
+      <div class="roulette-box">
+        <div class="roulette-name" id="rouletteName">？？？</div>
+        <span class="roulette-chick">🐥</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 抽選ボタン -->
+  <div class="lottery-section">
+    <button class="btn btn-lottery" id="lotteryBtn" onclick="startLottery()" disabled>
+      🌸 抽選スタート！ 🌸
+    </button>
+    <p class="count-badge" id="countBadge">参加者を2名以上追加してください</p>
+    <br>
+    <button class="btn btn-reset" onclick="resetAll()">🔄 全員リセット</button>
+  </div>
+
+  <footer>🐥 卓球練習 参加費無料 抽選システム 🌸</footer>
+</div>
+
+<!-- 結果モーダル -->
+<div id="result-overlay">
+  <div class="result-card">
+    <span class="result-chick">🐥</span>
+    <p class="result-label">🌸 当 選 者 🌸</p>
+    <div class="result-name" id="resultName"></div>
+    <div class="result-free-badge">🎉 参加費 無料！ 🎉</div>
+    <p class="result-sub">おめでとうございます！🏓</p>
+    <button class="btn btn-close" onclick="closeResult()">✨ やったー！ ✨</button>
+  </div>
+</div>
+
+<script>
+  let participants = [];
+  let isRunning = false;
+
+  /* ===== 花びら背景 ===== */
+  const petalEmojis = ['🌸','🌼','🍀','🌿','🌺','🌷'];
+  function createPetals() {
+    const container = document.getElementById('petalContainer');
+    for (let i = 0; i < 18; i++) {
+      const el = document.createElement('div');
+      el.className = 'petal';
+      const emoji = petalEmojis[Math.floor(Math.random() * petalEmojis.length)];
+      el.textContent = emoji;
+      el.style.cssText = `
+        left: ${Math.random() * 100}%;
+        font-size: ${Math.random() * 14 + 10}px;
+        animation-duration: ${Math.random() * 12 + 10}s;
+        animation-delay: ${Math.random() * 14}s;
+      `;
+      container.appendChild(el);
+    }
+  }
+  createPetals();
+
+  /* ===== 参加者追加 ===== */
+  function addParticipant() {
+    const input = document.getElementById('nameInput');
+    const name = input.value.trim();
+    if (!name) { input.focus(); shakeInput(input); return; }
+    if (participants.includes(name)) { shakeInput(input); return; }
+    participants.push(name);
+    input.value = '';
+    input.focus();
+    renderParticipants();
+    updateLotteryBtn();
+  }
+
+  function shakeInput(el) {
+    el.style.borderColor = '#e07050';
+    el.animate([
+      {transform:'translateX(0)'},{transform:'translateX(-6px)'},
+      {transform:'translateX(6px)'},{transform:'translateX(0)'}
+    ], { duration: 300 });
+    setTimeout(() => el.style.borderColor = '', 800);
+  }
+
+  function removeParticipant(idx) {
+    participants.splice(idx, 1);
+    renderParticipants();
+    updateLotteryBtn();
+  }
+
+  function renderParticipants() {
+    const list = document.getElementById('participantsList');
+    if (participants.length === 0) {
+      list.innerHTML = '<div class="empty-hint">🐥 まずは参加者を追加してね！</div>';
+      return;
+    }
+    list.innerHTML = participants.map((name, i) => `
+      <div class="participant-chip">
+        <span class="chip-num">${i + 1}</span>
+        <span>${name}</span>
+        <span class="chip-delete" onclick="removeParticipant(${i})" title="削除">✕</span>
+      </div>
+    `).join('');
+  }
+
+  function updateLotteryBtn() {
+    const btn = document.getElementById('lotteryBtn');
+    const badge = document.getElementById('countBadge');
+    if (participants.length < 2) {
+      btn.disabled = true;
+      badge.textContent = participants.length === 1
+        ? '🐣 あと1名追加すると抽選できます'
+        : '🐥 参加者を2名以上追加してください';
+    } else {
+      btn.disabled = false;
+      badge.textContent = `🌸 ${participants.length}名で抽選します！`;
+    }
+  }
+
+  document.getElementById('nameInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addParticipant();
+  });
+
+  /* ===== 抽選開始 ===== */
+  function startLottery() {
+    if (isRunning || participants.length < 2) return;
+    isRunning = true;
+    document.getElementById('lotteryBtn').disabled = true;
+
+    const rouletteArea = document.getElementById('roulette-area');
+    const rouletteName = document.getElementById('rouletteName');
+    rouletteArea.style.display = 'block';
+
+    const totalDuration = 4200;
+    const startTime = Date.now();
+    let interval = 70;
+    const colors = ['#c0693a','#d4804a','#e87030','#b05828','#c86030','#e06848'];
+    let ci = 0;
+
+    function spin() {
+      const elapsed = Date.now() - startTime;
+      const progress = elapsed / totalDuration;
+
+      const rnd = participants[Math.floor(Math.random() * participants.length)];
+      rouletteName.textContent = rnd;
+      rouletteName.style.color = colors[ci++ % colors.length];
+
+      interval = progress < 0.55 ? 70
+               : progress < 0.75 ? 130
+               : progress < 0.9  ? 260
+               : 480;
+
+      if (elapsed < totalDuration) {
+        setTimeout(spin, interval);
+      } else {
+        const winner = participants[Math.floor(Math.random() * participants.length)];
+        rouletteName.textContent = winner;
+        rouletteName.style.color = '#c0693a';
+        setTimeout(() => showResult(winner), 700);
+      }
+    }
+    spin();
+  }
+
+  function showResult(winner) {
+    document.getElementById('resultName').textContent = winner;
+    document.getElementById('result-overlay').classList.add('show');
+    launchConfetti();
+  }
+
+  function closeResult() {
+    document.getElementById('result-overlay').classList.remove('show');
+    isRunning = false;
+    document.getElementById('lotteryBtn').disabled = participants.length < 2;
+  }
+
+  /* ===== 紙吹雪（花モチーフ） ===== */
+  function launchConfetti() {
+    const items = ['🌸','🌼','🌺','🍀','🌿','⭐','✨','🎉','🐥'];
+    for (let i = 0; i < 60; i++) {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'confetti-piece';
+        el.textContent = items[Math.floor(Math.random() * items.length)];
+        el.style.cssText = `
+          left: ${Math.random() * 100}vw;
+          font-size: ${Math.random() * 14 + 12}px;
+          animation-duration: ${Math.random() * 2.5 + 2}s;
+          animation-delay: ${Math.random() * 1.2}s;
+        `;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 5000);
+      }, i * 35);
+    }
+  }
+
+  /* ===== リセット ===== */
+  function resetAll() {
+    if (participants.length === 0) return;
+    if (!confirm('全員をリセットしますか？🐥')) return;
+    participants = [];
+    renderParticipants();
+    updateLotteryBtn();
+    document.getElementById('roulette-area').style.display = 'none';
+    document.getElementById('rouletteName').textContent = '？？？';
+    isRunning = false;
+  }
+</script>
+</body>
+</html>
