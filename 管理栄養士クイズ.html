@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理栄養士 国家試験 対策クイズ</title>
+  <!-- Google Fontsの読み込み（Noto Sans JP：日本語フォント） -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* =====================================================
+       グローバルリセットと基本スタイル
+       =====================================================*/
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* ページ全体の背景グラデーション（紫→青のグラデーション） */
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* =====================================================
+       アプリ全体のコンテナ
+       =====================================================*/
+    #app {
+      width: 100%;
+      max-width: 760px;
+      position: relative;
+    }
+
+    /* =====================================================
+       ヘッダーエリア（タイトルと統計情報）
+       =====================================================*/
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+      color: white;
+    }
+
+    .header h1 {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 900;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 0.9rem;
+      opacity: 0.85;
+      font-weight: 300;
+    }
+
+    /* =====================================================
+       スコアバー（問題番号・スコア・連続正解）
+       =====================================================*/
+    .stats-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 10px 20px;
+      margin-bottom: 14px;
+      color: white;
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+
+    .stats-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .stats-label {
+      font-size: 0.7rem;
+      opacity: 0.8;
+      font-weight: 300;
+    }
+
+    .stats-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    /* 連続正解カウンターのハイライト（3連続以上で光る） */
+    .streak-highlight {
+      color: #ffd700;
+      animation: streakPulse 0.6s ease-out;
+    }
+
+    @keyframes streakPulse {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    /* =====================================================
+       プログレスバー（上部の進捗表示）
+       =====================================================*/
+    .progress-container {
+      background: rgba(255,255,255,0.2);
+      border-radius: 99px;
+      height: 8px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 99px;
+      /* 正解→緑、不正解→赤のグラデーションで進捗を表示 */
+      background: linear-gradient(90deg, #43e97b, #38f9d7);
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 0 10px rgba(67,233,123,0.5);
+    }
+
+    /* =====================================================
+       問題カード（白い丸角のカード）
+       =====================================================*/
+    .question-card {
+      background: white;
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.15),
+        0 4px 16px rgba(0,0,0,0.08);
+      animation: cardIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* カード表示アニメーション（下から滑らかに登場） */
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.96);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* カードの左上の装飾アクセント */
+    .question-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    /* =====================================================
+       カテゴリバッジ（各カテゴリを色分けして表示）
+       =====================================================*/
+    .category-badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 99px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+
+    /* カテゴリ別の色定義 */
+    .cat-基礎栄養学     { background: #fff0f3; color: #e63980; border: 1.5px solid #e63980; }
+    .cat-応用栄養学     { background: #fff4e6; color: #e67700; border: 1.5px solid #e67700; }
+    .cat-臨床栄養学     { background: #f0fff4; color: #2f9e44; border: 1.5px solid #2f9e44; }
+    .cat-食べ物と健康   { background: #fff9db; color: #e67700; border: 1.5px solid #f59f00; }
+    .cat-人体の構造と機能 { background: #f3f0ff; color: #7048e8; border: 1.5px solid #7048e8; }
+    .cat-公衆栄養学     { background: #e7f5ff; color: #1971c2; border: 1.5px solid #1971c2; }
+    .cat-栄養教育論     { background: #fff0fb; color: #c2255c; border: 1.5px solid #c2255c; }
+    .cat-給食経営管理論 { background: #e6fcf5; color: #099268; border: 1.5px solid #099268; }
+    .cat-社会・環境と健康{ background: #e8f4fd; color: #0c6ef2; border: 1.5px solid #0c6ef2; }
+    .cat-食品衛生学     { background: #fff3e0; color: #d84315; border: 1.5px solid #d84315; }
+
+    /* =====================================================
+       問題番号と問題文
+       =====================================================*/
+    .question-number {
+      font-size: 0.78rem;
+      color: #aaa;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .question-text {
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
+      font-weight: 700;
+      color: #1a1a2e;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    /* =====================================================
+       選択肢ボタン
+       =====================================================*/
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border: 2px solid #e8e8f0;
+      border-radius: 14px;
+      background: #f8f8fc;
+      cursor: pointer;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 0.95rem;
+      color: #2d2d44;
+      font-weight: 500;
+      text-align: left;
+      transition:
+        transform 0.15s ease,
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+      line-height: 1.5;
+    }
+
+    /* ホバー時のエフェクト（未回答時のみ） */
+    .option-btn:hover:not(:disabled) {
+      transform: translateX(4px);
+      border-color: #667eea;
+      background: #f0f0ff;
+      box-shadow: 0 4px 12px rgba(102,126,234,0.15);
+    }
+
+    /* 選択肢の頭文字バッジ（A, B, C, D） */
+    .option-letter {
+      min-width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: #e8e8f0;
+      color: #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    /* 正解の選択肢（緑ハイライト） */
+    .option-btn.correct {
+      border-color: #2f9e44;
+      background: linear-gradient(135deg, #f0fff4, #dcffe8);
+      color: #1a5c2a;
+      animation: correctBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .option-btn.correct .option-letter {
+      background: #2f9e44;
+      color: white;
+    }
+
+    /* 不正解の選択肢（赤ハイライト） */
+    .option-btn.wrong {
+      border-color: #e03131;
+      background: linear-gradient(135deg, #fff5f5, #ffe8e8);
+      color: #7d1a1a;
+      animation: wrongShake 0.4s ease;
+    }
+
+    .option-btn.wrong .option-letter {
+      background: #e03131;
+      color: white;
+    }
+
+    /* 正解アニメーション（バウンス） */
+    @keyframes correctBounce {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    /* 不正解アニメーション（左右に振れる） */
+    @keyframes wrongShake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-6px); }
+      40%       { transform: translateX(6px); }
+      60%       { transform: translateX(-4px); }
+      80%       { transform: translateX(4px); }
+    }
+
+    /* 回答後はボタンを無効化 */
+    .option-btn:disabled {
+      cursor: default;
+    }
+
+    /* =====================================================
+       解説エリア（回答後に表示）
+       =====================================================*/
+    .explanation-box {
+      margin-top: 20px;
+      padding: 16px 20px;
+      border-radius: 14px;
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: #2d2d44;
+      animation: fadeIn 0.4s ease;
+      display: none; /* 初期非表示、回答後に表示 */
+    }
+
+    .explanation-box.correct-exp {
+      background: linear-gradient(135deg, #f0fff4, #e6fef0);
+      border-left: 4px solid #2f9e44;
+    }
+
+    .explanation-box.wrong-exp {
+      background: linear-gradient(135deg, #fff5f5, #fff0f0);
+      border-left: 4px solid #e03131;
+    }
+
+    .explanation-title {
+      font-weight: 700;
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .exp-icon {
+      font-size: 1rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =====================================================
+       次の問題ボタン
+       =====================================================*/
+    .next-btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s;
+      box-shadow: 0 6px 20px rgba(102,126,234,0.35);
+      display: none; /* 初期非表示、回答後に表示 */
+    }
+
+    .next-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(102,126,234,0.45);
+    }
+
+    .next-btn:active {
+      transform: translateY(0);
+    }
+
+    /* =====================================================
+       連続正解ポップアップ（フラッシュ表示）
+       =====================================================*/
+    .streak-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: linear-gradient(135deg, #ffd700, #ff9500);
+      color: white;
+      padding: 18px 36px;
+      border-radius: 20px;
+      font-size: 1.4rem;
+      font-weight: 900;
+      text-align: center;
+      z-index: 9999;
+      box-shadow: 0 10px 40px rgba(255,165,0,0.4);
+      pointer-events: none;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
+    }
+
+    .streak-popup.show {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .streak-popup.hide {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+    }
+
+    /* =====================================================
+       結果画面
+       =====================================================*/
+    .result-screen {
+      background: white;
+      border-radius: 24px;
+      padding: 40px 32px;
+      text-align: center;
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.15),
+        0 4px 16px rgba(0,0,0,0.08);
+      animation: cardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-screen::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    .result-emoji {
+      font-size: 4rem;
+      margin-bottom: 16px;
+      animation: emojiBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+    }
+
+    @keyframes emojiBounce {
+      from { transform: scale(0) rotate(-10deg); }
+      to   { transform: scale(1) rotate(0); }
+    }
+
+    .result-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #1a1a2e;
+      margin-bottom: 8px;
+    }
+
+    .result-subtitle {
+      color: #888;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+    }
+
+    /* 得点の大きな表示 */
+    .score-display {
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .score-number {
+      font-size: 4rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .score-total {
+      font-size: 1.2rem;
+      color: #aaa;
+      font-weight: 500;
+    }
+
+    /* 星表示（スコアに応じて1〜5星） */
+    .stars-container {
+      font-size: 2rem;
+      margin: 16px 0;
+      letter-spacing: 4px;
+    }
+
+    .star {
+      display: inline-block;
+      transition: transform 0.2s ease;
+      animation: starPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .star:nth-child(1) { animation-delay: 0.4s; }
+    .star:nth-child(2) { animation-delay: 0.5s; }
+    .star:nth-child(3) { animation-delay: 0.6s; }
+    .star:nth-child(4) { animation-delay: 0.7s; }
+    .star:nth-child(5) { animation-delay: 0.8s; }
+
+    @keyframes starPop {
+      from { transform: scale(0) rotate(-20deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0);      opacity: 1; }
+    }
+
+    /* カテゴリ別正解率の内訳 */
+    .category-breakdown {
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .breakdown-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #555;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .breakdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .breakdown-cat {
+      font-size: 0.72rem;
+      white-space: nowrap;
+      color: #555;
+      width: 110px;
+      flex-shrink: 0;
+    }
+
+    .breakdown-bar-bg {
+      flex: 1;
+      height: 8px;
+      border-radius: 99px;
+      background: #eee;
+      overflow: hidden;
+    }
+
+    .breakdown-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transition: width 1s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .breakdown-pct {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #667eea;
+      width: 36px;
+      text-align: right;
+    }
+
+    /* 結果画面のボタンエリア */
+    .result-btn-area {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      margin-top: 24px;
+    }
+
+    /* もう一度ボタン */
+    .retry-btn {
+      padding: 16px 40px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 20px rgba(102,126,234,0.35);
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .retry-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(102,126,234,0.45);
+    }
+
+    /* 年度選択に戻るボタン（結果画面用） */
+    .back-to-year-btn {
+      padding: 12px 32px;
+      border: 2px solid #667eea;
+      border-radius: 14px;
+      background: transparent;
+      color: #667eea;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: transform 0.15s ease, background 0.2s ease, color 0.2s ease;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .back-to-year-btn:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-2px);
+    }
+
+    /* =====================================================
+       紙吹雪（コンフェッティ）アニメーション
+       高得点（80%以上）で表示される祝福エフェクト
+       =====================================================*/
+    .confetti-wrapper {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9998;
+      overflow: hidden;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      top: -20px;
+      animation: confettiFall linear both;
+    }
+
+    /* 紙吹雪の落下アニメーション（ランダムな回転と揺れ） */
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(-20px) rotateZ(0deg) rotateX(0deg);
+        opacity: 1;
+      }
+      80% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotateZ(720deg) rotateX(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* =====================================================
+       年度選択画面（新規追加）
+       =====================================================*/
+    #year-select-screen {
+      background: white;
+      border-radius: 24px;
+      padding: 40px 32px;
+      text-align: center;
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.15),
+        0 4px 16px rgba(0,0,0,0.08);
+      animation: cardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 年度選択画面の上部アクセントライン */
+    #year-select-screen::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    /* 年度選択画面のロゴアイコン */
+    .year-select-logo {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+    }
+
+    /* 年度選択画面のタイトル */
+    .year-select-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #1a1a2e;
+      margin-bottom: 6px;
+    }
+
+    /* 年度選択画面のサブタイトル */
+    .year-select-subtitle {
+      color: #888;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    /* 年度選択の案内テキスト */
+    .year-select-label {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #444;
+      margin-bottom: 16px;
+    }
+
+    /* 年度ボタンを格子状に並べるグリッド */
+    .year-btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    /* 年度ボタン（第35回〜第39回） */
+    .year-btn {
+      padding: 18px 12px;
+      border: 2px solid #e8e8f0;
+      border-radius: 16px;
+      background: #f8f8fc;
+      cursor: pointer;
+      font-family: 'Noto Sans JP', sans-serif;
+      text-align: center;
+      transition: transform 0.15s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .year-btn:hover {
+      transform: translateY(-3px);
+      border-color: #667eea;
+      background: #f0f0ff;
+      box-shadow: 0 8px 20px rgba(102,126,234,0.2);
+    }
+
+    /* 年度ボタンの回数テキスト（大きめ） */
+    .year-btn-round {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #1a1a2e;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* 年度ボタンの西暦テキスト（小さめ） */
+    .year-btn-year {
+      font-size: 0.8rem;
+      color: #888;
+      display: block;
+    }
+
+    /* 第39回ボタンは中央に配置するため専用のコンテナで包む */
+    .year-btn-center-row {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    /* 中央配置ボタンのサイズ調整 */
+    .year-btn-center-row .year-btn {
+      width: calc(50% - 6px);
+    }
+
+    /* 全年度ランダム出題ボタン（横幅いっぱい） */
+    .year-btn-all {
+      width: 100%;
+      padding: 18px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 20px rgba(102,126,234,0.35);
+      margin-top: 4px;
+    }
+
+    .year-btn-all:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(102,126,234,0.45);
+    }
+
+    /* 問題数の表示（年度選択画面の下部） */
+    .year-select-info {
+      font-size: 0.82rem;
+      color: #999;
+      margin-top: 16px;
+    }
+
+    /* =====================================================
+       スタート画面（年度選択後の旧スタート画面は削除し、
+       年度選択画面がその役割を兼ねる）
+       =====================================================*/
+    .start-screen {
+      background: white;
+      border-radius: 24px;
+      padding: 40px 32px;
+      text-align: center;
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.15),
+        0 4px 16px rgba(0,0,0,0.08);
+      animation: cardIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .start-screen::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 24px 24px 0 0;
+    }
+
+    .start-screen { position: relative; overflow: hidden; }
+
+    .start-logo {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+    }
+
+    .start-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #1a1a2e;
+      margin-bottom: 6px;
+    }
+
+    .start-subtitle {
+      color: #888;
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    /* カテゴリ一覧の表示 */
+    .category-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    .start-btn {
+      padding: 16px 48px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 20px rgba(102,126,234,0.35);
+    }
+
+    .start-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 30px rgba(102,126,234,0.45);
+    }
+
+    .question-count-info {
+      font-size: 0.82rem;
+      color: #999;
+      margin-top: 14px;
+    }
+
+    /* =====================================================
+       レスポンシブ対応（スマートフォン）
+       =====================================================*/
+    @media (max-width: 480px) {
+      body { padding: 12px; }
+      .question-card { padding: 24px 18px; }
+      .result-screen { padding: 30px 20px; }
+      #year-select-screen { padding: 30px 20px; }
+      .score-number { font-size: 3rem; }
+      .breakdown-cat { width: 90px; font-size: 0.68rem; }
+      .year-btn-center-row .year-btn { width: calc(50% - 6px); }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- =====================================================
+     アプリのルートコンテナ
+     ===================================================== -->
+<div id="app">
+
+  <!-- ヘッダー（常時表示） -->
+  <div class="header">
+    <h1>📚 管理栄養士 国家試験対策クイズ</h1>
+    <p>10カテゴリ・全50問以上で実力チェック</p>
+  </div>
+
+  <!-- 統計バー（問題中のみ表示） -->
+  <div class="stats-bar" id="statsBar" style="display:none;">
+    <div class="stats-item">
+      <span class="stats-label">問題</span>
+      <span class="stats-value" id="statQuestion">1 / 10</span>
+    </div>
+    <div class="stats-item">
+      <span class="stats-label">正解数</span>
+      <span class="stats-value" id="statScore">0</span>
+    </div>
+    <div class="stats-item">
+      <span class="stats-label">🔥 連続正解</span>
+      <span class="stats-value" id="statStreak">0</span>
+    </div>
+  </div>
+
+  <!-- プログレスバー（問題中のみ表示） -->
+  <div class="progress-container" id="progressContainer" style="display:none;">
+    <div class="progress-bar" id="progressBar" style="width:0%"></div>
+  </div>
+
+  <!-- =====================================================
+       年度選択画面（新規追加）
+       クイズを始める前に年度を選ぶ画面
+       ===================================================== -->
+  <div id="year-select-screen">
+    <div class="year-select-logo">🩺</div>
+    <div class="year-select-title">管理栄養士 国家試験対策</div>
+    <div class="year-select-subtitle">
+      実際の国家試験に出題される問題スタイルで<br>
+      10カテゴリを網羅した問題に挑戦しよう！
+    </div>
+
+    <div class="year-select-label">年度を選んでください</div>
+
+    <!-- 第35回・第36回を2列で表示 -->
+    <div class="year-btn-grid">
+      <button class="year-btn" onclick="startQuizByYear(35)">
+        <span class="year-btn-round">第35回</span>
+        <span class="year-btn-year">2021年</span>
+      </button>
+      <button class="year-btn" onclick="startQuizByYear(36)">
+        <span class="year-btn-round">第36回</span>
+        <span class="year-btn-year">2022年</span>
+      </button>
+      <button class="year-btn" onclick="startQuizByYear(37)">
+        <span class="year-btn-round">第37回</span>
+        <span class="year-btn-year">2023年</span>
+      </button>
+      <button class="year-btn" onclick="startQuizByYear(38)">
+        <span class="year-btn-round">第38回</span>
+        <span class="year-btn-year">2024年</span>
+      </button>
+    </div>
+
+    <!-- 第39回は中央に1つだけ表示 -->
+    <div class="year-btn-center-row">
+      <button class="year-btn" onclick="startQuizByYear(39)">
+        <span class="year-btn-round">第39回</span>
+        <span class="year-btn-year">2025年</span>
+      </button>
+    </div>
+
+    <!-- 全年度まとめて出題するボタン -->
+    <button class="year-btn-all" onclick="startQuizByYear(0)">
+      🎲 全年度ランダム出題
+    </button>
+
+    <div class="year-select-info">各年度 10問以上・解説付き</div>
+  </div>
+
+  <!-- 問題カード（問題中のみ表示） -->
+  <div class="question-card" id="questionCard" style="display:none;">
+    <span class="category-badge" id="categoryBadge"></span>
+    <div class="question-number" id="questionNumber"></div>
+    <div class="question-text" id="questionText"></div>
+    <div class="options-grid" id="optionsGrid"></div>
+    <div class="explanation-box" id="explanationBox">
+      <div class="explanation-title">
+        <span class="exp-icon" id="expIcon"></span>
+        <span id="expTitle"></span>
+      </div>
+      <div id="expBody"></div>
+    </div>
+    <button class="next-btn" id="nextBtn" onclick="nextQuestion()">次の問題へ →</button>
+  </div>
+
+  <!-- 結果画面 -->
+  <div class="result-screen" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <div class="result-title" id="resultTitle">お疲れさまでした！</div>
+    <div class="result-subtitle" id="resultSubtitle"></div>
+    <div class="score-display">
+      <span class="score-number" id="resultScore">0</span>
+      <span class="score-total" id="resultTotal">/ 10</span>
+    </div>
+    <div class="stars-container" id="starsContainer"></div>
+    <div class="category-breakdown">
+      <div class="breakdown-title">📊 カテゴリ別 正解率</div>
+      <div id="breakdownItems"></div>
+    </div>
+    <!-- 結果画面のボタンエリア：「もう一度」と「年度選択に戻る」を縦並びで表示 -->
+    <div class="result-btn-area">
+      <button class="retry-btn" onclick="retryCurrentYear()">🔄 同じ年度でもう一度</button>
+      <button class="back-to-year-btn" onclick="goToYearSelect()">← 年度選択に戻る</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- 連続正解ポップアップ -->
+<div class="streak-popup" id="streakPopup"></div>
+
+<!-- 紙吹雪コンテナ -->
+<div class="confetti-wrapper" id="confettiWrapper"></div>
+
+
+<!-- =====================================================
+     JavaScript：クイズのロジック
+     ===================================================== -->
+<script>
+// =====================================================
+// 問題データの定義
+// 各問題は year（年度）, category（カテゴリ）, question（問題文）,
+// options（選択肢）, answer（正解のインデックス）,
+// explanation（解説）で構成される
+// year: 35=2021年, 36=2022年, 37=2023年, 38=2024年, 39=2025年
+// =====================================================
+const questions = [
+
+  // ================================================================
+  // 第35回（2021年）：基礎栄養学・食べ物と健康 中心
+  // ================================================================
+
+  {
+    year: 35,
+    category: "基礎栄養学",
+    question: "グルコースが解糖系を経て生成される最終産物として正しいのはどれか。",
+    options: [
+      "アセチルCoA",
+      "ピルビン酸",
+      "オキサロ酢酸",
+      "クエン酸"
+    ],
+    answer: 1,
+    explanation: "解糖系（嫌気的条件下）ではグルコース1分子から2分子のピルビン酸が生成されます。好気的条件ではピルビン酸はアセチルCoAに変換されてTCAサイクルへ入ります。解糖系は細胞質基質で行われる点も重要です。"
+  },
+  {
+    year: 35,
+    category: "基礎栄養学",
+    question: "必須アミノ酸に含まれないのはどれか。",
+    options: [
+      "トリプトファン",
+      "バリン",
+      "アルギニン",
+      "ロイシン"
+    ],
+    answer: 2,
+    explanation: "必須アミノ酸は体内で合成できない9種類（イソロイシン・ロイシン・リシン・メチオニン・フェニルアラニン・スレオニン・トリプトファン・バリン・ヒスチジン）です。アルギニンは体内で合成できるため非必須アミノ酸に分類されます。"
+  },
+  {
+    year: 35,
+    category: "基礎栄養学",
+    question: "脂溶性ビタミンはどれか。",
+    options: [
+      "ビタミンB1（チアミン）",
+      "ビタミンC（アスコルビン酸）",
+      "ビタミンK（フィロキノン）",
+      "ビタミンB12（コバラミン）"
+    ],
+    answer: 2,
+    explanation: "脂溶性ビタミンはA・D・E・Kの4種類です。ビタミンKは血液凝固や骨形成に関わります。水溶性ビタミン（B群・C）は過剰摂取しても尿中に排泄されますが、脂溶性ビタミンは過剰摂取で蓄積し、毒性を示すことがあります（特にA・D）。"
+  },
+  {
+    year: 35,
+    category: "基礎栄養学",
+    question: "脂質の消化吸収に関する記述として正しいのはどれか。",
+    options: [
+      "トリグリセリドはそのまま腸管から吸収される",
+      "胆汁酸は脂質の乳化を助け、膵リパーゼの作用を促進する",
+      "脂肪酸と2-モノグリセリドは血液に直接入りリポタンパク質を形成する",
+      "中鎖脂肪酸（MCT）はカイロミクロンとなってリンパ管に入る"
+    ],
+    answer: 1,
+    explanation: "胆汁酸（胆汁）は脂質を乳化して微細な粒子にし、膵リパーゼの作用を受けやすくします。脂肪酸と2-モノグリセリドは腸上皮でトリグリセリドに再合成されてカイロミクロンとなりリンパ管に入ります。中鎖脂肪酸は門脈から直接肝臓へ運ばれます。"
+  },
+  {
+    year: 35,
+    category: "食べ物と健康",
+    question: "でんぷんの老化（β化）を抑制する方法として誤っているのはどれか。",
+    options: [
+      "急速冷凍で水分活性を下げる",
+      "砂糖を加える",
+      "乳化剤を添加する",
+      "水分含量を40〜60%に保ち常温保存する"
+    ],
+    answer: 3,
+    explanation: "でんぷんの老化（β化）は水分含量30〜60%・温度0〜5℃で最も促進されます。老化を抑制するには急速冷凍（-30℃以下）、高温保存（60℃以上）、脱水（水分15%以下）、砂糖・乳化剤の添加などが有効です。常温・適度な水分は老化を促進します。"
+  },
+  {
+    year: 35,
+    category: "食べ物と健康",
+    question: "食品添加物に関する記述として正しいのはどれか。",
+    options: [
+      "天然添加物は安全性試験が不要である",
+      "既存添加物は国が安全性を確認した後に指定される",
+      "ソルビン酸は保存料として使用が認められている",
+      "亜硝酸ナトリウムは着色料として使用される"
+    ],
+    answer: 2,
+    explanation: "ソルビン酸（とそのカリウム塩）は食品保存料として広く使用が認められています。亜硝酸ナトリウムは着色料ではなく発色剤として使用されます。既存添加物は長年使用の実績があるものですが、現在は安全性確認が進められています。天然・合成問わず、食品添加物はすべて安全性評価が必要です。"
+  },
+  {
+    year: 35,
+    category: "食べ物と健康",
+    question: "魚の鮮度判定指標として使用されるK値について正しいのはどれか。",
+    options: [
+      "K値が低いほど鮮度が低い",
+      "ATPの分解産物の比率を示す指標で、高いほど鮮度が低い",
+      "pH変化を利用した指標である",
+      "生食の目安はK値70%以下である"
+    ],
+    answer: 1,
+    explanation: "K値はATP関連化合物全量に対するHxR（イノシン）とHx（ヒポキサンチン）の割合を示します。K値が高いほど鮮度が低く（ATP分解が進んでいる）、生食の目安はK値20%以下、加熱調理可は60%以下が目安です。"
+  },
+  {
+    year: 35,
+    category: "基礎栄養学",
+    question: "糖質の種類に関する記述として正しいのはどれか。",
+    options: [
+      "スクロース（ショ糖）はブドウ糖と果糖が1,6-グリコシド結合したものである",
+      "ラクトース（乳糖）はブドウ糖とガラクトースが結合した二糖類である",
+      "グリコーゲンはブドウ糖がβ-1,4-グリコシド結合した多糖類である",
+      "セルロースはα-グルコースが直鎖状に結合した多糖類である"
+    ],
+    answer: 1,
+    explanation: "ラクトース（乳糖）はβ-ガラクトースとグルコースがβ-1,4-グリコシド結合した二糖類です。スクロースはα-グルコースとβ-フルクトースが1,2-グリコシド結合したものです。グリコーゲンはα-1,4-グリコシド結合（主鎖）とα-1,6-グリコシド結合（分岐）からなる多糖です。"
+  },
+  {
+    year: 35,
+    category: "食べ物と健康",
+    question: "豆腐の製造に使用される凝固剤として正しいのはどれか。",
+    options: [
+      "食酢（酢酸）",
+      "硫酸カルシウム（にがりの主成分）または塩化マグネシウム（にがり）",
+      "炭酸水素ナトリウム",
+      "グルタミン酸ナトリウム"
+    ],
+    answer: 1,
+    explanation: "豆腐は大豆を磨砕した豆乳に凝固剤を加えて作ります。凝固剤には塩化マグネシウム（にがり）、硫酸カルシウム（すまし粉）、グルコノデルタラクトン（GDL）などが使用されます。塩化マグネシウムが天然にがりの主成分です。"
+  },
+  {
+    year: 35,
+    category: "社会・環境と健康",
+    question: "健康増進法（2003年施行）に規定された内容として正しいのはどれか。",
+    options: [
+      "メタボリックシンドロームの診断基準を規定している",
+      "受動喫煙防止のための環境整備義務が規定されている",
+      "食事バランスガイドの策定を義務付けている",
+      "介護予防事業の実施を規定している"
+    ],
+    answer: 1,
+    explanation: "健康増進法では受動喫煙防止のための取り組み（第25条〜）が規定されており、2020年施行の改正法で罰則規定も強化されました。同法には国民健康・栄養調査（第10〜16条）、特定給食施設（第20〜24条）等も規定されています。メタボ基準はガイドラインで定められ、介護予防は介護保険法に規定されています。"
+  },
+
+  // ================================================================
+  // 第36回（2022年）：臨床栄養学・栄養教育論 中心
+  // ================================================================
+
+  {
+    year: 36,
+    category: "臨床栄養学",
+    question: "慢性腎臓病（CKD）ステージG3b（eGFR 30〜44 mL/分/1.73㎡）の食事療法として正しいのはどれか。",
+    options: [
+      "たんぱく質を1.0〜1.2 g/kg標準体重/日に制限する",
+      "カリウムの摂取制限は不要である",
+      "たんぱく質を0.6〜0.8 g/kg標準体重/日に制限する",
+      "エネルギーは20〜25 kcal/kg標準体重/日に制限する"
+    ],
+    answer: 2,
+    explanation: "CKDガイドラインではG3b以降（eGFR<45）でたんぱく質を0.6〜0.8 g/kg標準体重/日に制限します。エネルギーは25〜35 kcal/kg/日を確保することが重要です。G3b以降はカリウム制限も考慮します。たんぱく質制限時は十分なエネルギー摂取が必要です。"
+  },
+  {
+    year: 36,
+    category: "臨床栄養学",
+    question: "糖尿病の食事療法における指示エネルギー量の算出方法として正しいのはどれか。",
+    options: [
+      "身長(m)² × 25（BMI目標値）× 身体活動係数",
+      "標準体重(kg) × 25〜35（身体活動量に応じたエネルギー係数）",
+      "現体重(kg) × 30〜35",
+      "体表面積 × 基礎代謝基準値"
+    ],
+    answer: 1,
+    explanation: "糖尿病の食事療法では、指示エネルギー量 = 標準体重[身長(m)²×22] × 身体活動量に応じたエネルギー係数（軽労作：25〜30、普通労作：30〜35、重労作：35〜）で計算します。肥満の場合は体重管理を優先します。"
+  },
+  {
+    year: 36,
+    category: "臨床栄養学",
+    question: "肝硬変の非代償期における栄養療法として誤っているのはどれか。",
+    options: [
+      "就寝前の夜食（LES）は有効である",
+      "分岐鎖アミノ酸（BCAA）製剤を使用する",
+      "たんぱく質を制限して0.5 g/kg/日以下にする",
+      "エネルギーは25〜35 kcal/kg/日を確保する"
+    ],
+    answer: 2,
+    explanation: "肝硬変では以前たんぱく質制限が行われていましたが、現在は原則たんぱく質を制限しません（推奨量1.0〜1.5 g/kg/日）。肝性脳症を合併した場合のみ一時的にたんぱく質を調整します。BCAAは芳香族アミノ酸（AAA）との比（Fischer比）改善に有効です。LES（Late Evening Snack）は就寝前の補食で低血糖防止に有効です。"
+  },
+  {
+    year: 36,
+    category: "臨床栄養学",
+    question: "クローン病の栄養管理として正しいのはどれか。",
+    options: [
+      "活動期では高脂肪食が推奨される",
+      "活動期では成分栄養剤（ED）による経腸栄養が有効である",
+      "缓解期では絶食管理が基本である",
+      "ビタミンB12の欠乏は起こらない"
+    ],
+    answer: 1,
+    explanation: "クローン病の活動期では、腸管を休ませるため成分栄養剤（エレンタールなど）による経腸栄養が有効です。活動期には低脂肪食が基本です。回腸末端が病変部位になると、ビタミンB12や胆汁酸の吸収障害が起こります。緩解期には通常食に戻すことを目指します。"
+  },
+  {
+    year: 36,
+    category: "栄養教育論",
+    question: "行動変容の「準備期（Preparation stage）」に対応する支援として最も適切なのはどれか。",
+    options: [
+      "問題意識を高めるための情報提供を行う",
+      "変化への意志はないため強制しない",
+      "具体的な行動目標を設定し実行を促す",
+      "維持できるよう環境整備を支援する"
+    ],
+    answer: 2,
+    explanation: "トランスセオレティカルモデル（TTM）の変容ステージでは：①前熟考期（変化意図なし）→情報提供、②熟考期（1か月以内に変化予定）→メリット・デメリット検討、③準備期（1か月以内に行動開始予定）→具体的な行動目標設定、④実行期（6か月未満）→自己強化・環境整備、⑤維持期（6か月以上）→再発防止です。"
+  },
+  {
+    year: 36,
+    category: "栄養教育論",
+    question: "栄養カウンセリングにおける「動機づけ面接（MI）」の原則として誤っているのはどれか。",
+    options: [
+      "共感の表明（Expressing empathy）",
+      "葛藤の拡大（Developing discrepancy）",
+      "抵抗への迎合（Rolling with resistance）",
+      "自己効力感の高揚（Supporting self-efficacy）"
+    ],
+    answer: 2,
+    explanation: "動機づけ面接（MI）の基本原則はMERS：①共感の表明（Empathy）、②葛藤の拡大（Discrepancy）、③抵抗に逆らわない＝抵抗を手放す（Rolling with resistance）、④自己効力感の支持（Self-efficacy）です。「抵抗への迎合（迎合する）」ではなく「抵抗に逆らわない（転がす）」が正しい表現です。"
+  },
+  {
+    year: 36,
+    category: "栄養教育論",
+    question: "集団を対象とした栄養教育の評価のうち、「参加者の知識・態度・行動が変化したか」を測る評価はどれか。",
+    options: [
+      "企画評価",
+      "経過評価",
+      "影響評価",
+      "結果評価"
+    ],
+    answer: 2,
+    explanation: "評価の種類：①企画評価（プログラムの適切性）、②経過評価（実施状況・プロセス）、③影響評価（知識・態度・スキル・行動の変化）＝短期・中期目標の達成度、④結果評価（QOL・健康指標・疾病の変化）＝長期目標の達成度、です。影響評価は「中間アウトカム」とも呼ばれます。"
+  },
+  {
+    year: 36,
+    category: "栄養教育論",
+    question: "ヘルスリテラシーに関する記述として正しいのはどれか。",
+    options: [
+      "ヘルスリテラシーは読み書き能力のみを指す",
+      "機能的・相互作用的・批判的の3つのレベルに分類される",
+      "高齢者ではヘルスリテラシーは関係ない",
+      "ヘルスリテラシーが高い人ほど保健行動は低下する"
+    ],
+    answer: 1,
+    explanation: "ヘルスリテラシーは、健康情報を入手・理解・評価・活用する能力の総称です。Nutbeamらの分類では、①機能的（情報の読み書き）、②相互作用的（コミュニケーション能力）、③批判的（情報を批判的に分析・活用）の3レベルがあります。ヘルスリテラシーが高いほど適切な保健行動につながります。"
+  },
+  {
+    year: 36,
+    category: "臨床栄養学",
+    question: "静脈栄養（TPN）施行中の合併症として誤っているのはどれか。",
+    options: [
+      "高血糖",
+      "リフィーディング症候群（再栄養症候群）",
+      "カテーテル感染（敗血症）",
+      "低カルシウム血症"
+    ],
+    answer: 3,
+    explanation: "TPN（中心静脈栄養）の主な合併症は、①高血糖（インスリン不足）、②脂肪肝（グルコース過剰）、③カテーテル感染・敗血症、④リフィーディング症候群（低栄養患者への急速な栄養補給時に低リン血症などが起こる）などです。低カルシウム血症はTPNの直接的な主要合併症とはいえません（カルシウムが補給されれば問題なし）。"
+  },
+  {
+    year: 36,
+    category: "臨床栄養学",
+    question: "低栄養の指標として用いられるSGA（主観的包括的評価）に含まれる項目として正しいのはどれか。",
+    options: [
+      "血清アルブミン値のみで評価する",
+      "体重変化・食事摂取変化・身体所見などを含む総合的な評価方法である",
+      "MRIによる体組成測定が必須である",
+      "5歳未満の小児のみに使用する"
+    ],
+    answer: 1,
+    explanation: "SGA（Subjective Global Assessment：主観的包括的評価）は、問診と身体所見を組み合わせた栄養評価ツールです。体重変化、食事摂取状況、消化器症状、機能状態、疾患の栄養必要量への影響、皮下脂肪の減少・筋肉の萎縮などの身体所見を総合的に評価します。血液検査は含みません。"
+  },
+
+  // ================================================================
+  // 第37回（2023年）：公衆栄養学・給食経営管理論 中心
+  // ================================================================
+
+  {
+    year: 37,
+    category: "公衆栄養学",
+    question: "国民健康・栄養調査について正しいのはどれか。",
+    options: [
+      "毎年全国の全世帯を対象に実施する",
+      "健康増進法に基づいて実施される",
+      "身体測定は行わず、食事調査のみ実施する",
+      "都道府県が主体となって実施する"
+    ],
+    answer: 1,
+    explanation: "国民健康・栄養調査は健康増進法（第10〜16条）に基づき、毎年厚生労働省が実施する調査です。無作為抽出した世帯が対象で、食事調査（食事記録法）、身体状況調査（身体測定・血液検査）、生活習慣調査から構成されます。国が実施主体です。"
+  },
+  {
+    year: 37,
+    category: "公衆栄養学",
+    question: "日本人の食事摂取基準（2020年版）に関する記述として正しいのはどれか。",
+    options: [
+      "対象は健常者のみで患者への適用は不可である",
+      "策定目的に生活習慣病のリスク低減が新たに追加された",
+      "推定平均必要量が設定されていない栄養素には耐容上限量を設定する",
+      "5年ごとに改定される"
+    ],
+    answer: 3,
+    explanation: "日本人の食事摂取基準は5年ごとに改定されます（次回2025年版）。2020年版では「高齢者の低栄養・フレイル対策」が追加されました。生活習慣病のリスク低減は2015年版から追加されています。推定平均必要量・推奨量が設定できない場合は目安量が設定されます。"
+  },
+  {
+    year: 37,
+    category: "公衆栄養学",
+    question: "地域の栄養問題の把握に使用するアセスメントの種類として誤っているのはどれか。",
+    options: [
+      "QOL調査",
+      "コミュニティアセスメント",
+      "ランダム化比較試験（RCT）",
+      "ニーズアセスメント"
+    ],
+    answer: 2,
+    explanation: "ランダム化比較試験（RCT）は介入効果を評価する研究デザインであり、アセスメント（状況把握）の手法ではありません。地域の栄養問題把握には、コミュニティアセスメント、ニーズアセスメント、QOL調査、既存データの分析（健診データ・統計）などが用いられます。"
+  },
+  {
+    year: 37,
+    category: "給食経営管理論",
+    question: "大量調理施設衛生管理マニュアル（HACCP対応）において、加熱調理食品の中心温度として正しいのはどれか。",
+    options: [
+      "60℃で1分間以上",
+      "75℃で1分間以上（二枚貝等は85〜90℃で90秒以上）",
+      "80℃で30秒間以上",
+      "70℃で3分間以上"
+    ],
+    answer: 1,
+    explanation: "大量調理施設衛生管理マニュアルでは、加熱調理食品の中心温度は75℃・1分間以上（ノロウイルスが懸念される二枚貝等は85〜90℃・90秒以上）と定められています。中心温度計で3点以上測定し記録することも義務付けられています。"
+  },
+  {
+    year: 37,
+    category: "給食経営管理論",
+    question: "給食の原価管理において、損益分岐点の説明として正しいのはどれか。",
+    options: [
+      "変動費と固定費の合計が最小になる点",
+      "売上高と総費用（変動費+固定費）が等しくなる点",
+      "利益率が最大になる点",
+      "固定費を変動費が上回る点"
+    ],
+    answer: 1,
+    explanation: "損益分岐点とは、売上高 = 総費用（変動費 + 固定費）となる点で、利益がゼロになる売上高・生産量です。損益分岐点売上高 = 固定費 ÷（1 - 変動費率）で計算します。これを下回ると損失、上回ると利益が生じます。給食管理での採算管理に重要な概念です。"
+  },
+  {
+    year: 37,
+    category: "給食経営管理論",
+    question: "特定給食施設における管理栄養士の業務として正しいのはどれか。",
+    options: [
+      "食品の安全管理は調理師に委任し、栄養管理のみ担当する",
+      "給食業務のPDCAサイクルを実践し、継続的な改善を行う",
+      "栄養管理報告書は任意の提出であり法的義務はない",
+      "1回100食以上または1日250食以上の施設では管理栄養士の配置が任意である"
+    ],
+    answer: 1,
+    explanation: "管理栄養士はPDCAサイクル（Plan→Do→Check→Act）に基づいた給食運営を行います。健康増進法では、1回300食以上または1日750食以上の施設は「特定給食施設」として管理栄養士の必置義務があります。栄養管理報告書は都道府県知事への定期報告が義務付けられています。"
+  },
+  {
+    year: 37,
+    category: "公衆栄養学",
+    question: "食育基本法に関する記述として正しいのはどれか。",
+    options: [
+      "2015年に施行された",
+      "農林水産省が主体となって推進している",
+      "食育推進基本計画は10年ごとに策定される",
+      "学校給食を通じた食育は含まれない"
+    ],
+    answer: 1,
+    explanation: "食育基本法は2005年に施行されました。内閣府（現在は農林水産省）が中心となり推進されています。食育推進基本計画は5年ごとに策定されており（第4次：2021〜2025年）、学校、家庭、地域、保育所・幼稚園など幅広い場での食育推進が含まれています。"
+  },
+  {
+    year: 37,
+    category: "給食経営管理論",
+    question: "HACCPに関する記述として正しいのはどれか。",
+    options: [
+      "危害要因を事後的に管理する手法である",
+      "重要管理点（CCP）で連続的モニタリングを行う予防的な食品安全管理手法である",
+      "微生物的危害のみを対象とする",
+      "日本では任意の取り組みであり法的義務はない"
+    ],
+    answer: 1,
+    explanation: "HACCPは危害要因分析・重要管理点（Hazard Analysis Critical Control Point）の略で、食品製造・加工における衛生管理手法です。食品安全上の危害（生物・化学・物理的）を事前に分析し、重要管理点でのモニタリングにより予防的に管理します。2020年6月から日本でも食品衛生法改正によりHACCPが義務化されました。"
+  },
+  {
+    year: 37,
+    category: "公衆栄養学",
+    question: "特定保健指導（積極的支援）の対象者として正しいのはどれか。",
+    options: [
+      "BMI 25以上かつ腹囲が男性85cm以上、女性90cm以上の全ての者",
+      "腹囲が基準値以上、またはBMI25以上で複数のリスク（血糖・血圧・脂質）を持つ40〜74歳の者",
+      "特定健康診査の結果に関わらず希望する全ての者",
+      "65歳以上の高齢者のみが対象である"
+    ],
+    answer: 1,
+    explanation: "特定保健指導は40〜74歳（後期高齢者医療加入者は除く）を対象に、特定健診の結果から腹囲・BMI・血糖・血圧・中性脂肪・HDL-コレステロール・喫煙歴などのリスク数に応じて「動機付け支援」または「積極的支援」に振り分けられます。リスクが多い場合は積極的支援の対象となります。"
+  },
+  {
+    year: 37,
+    category: "給食経営管理論",
+    question: "クックチルシステムに関する記述として正しいのはどれか。",
+    options: [
+      "調理後すぐに提供するシステムである",
+      "加熱調理後に急速冷却し、チルド保存後に再加熱して提供するシステムである",
+      "冷凍保存して2週間以内に提供するシステムである",
+      "真空包装して常温保存するシステムである"
+    ],
+    answer: 1,
+    explanation: "クックチルシステムは、調理後に急速冷却器（ブラストチラー）で90分以内に3℃以下まで冷却し、チルド（0〜3℃）保存後に提供直前に再加熱するシステムです。提供まで最大5日間保存可能です（冷蔵）。作業の平準化や計画的な食材調達が可能になります。"
+  },
+
+  // ================================================================
+  // 第38回（2024年）：人体の構造と機能・応用栄養学 中心
+  // ================================================================
+
+  {
+    year: 38,
+    category: "人体の構造と機能",
+    question: "インスリンの作用として正しいのはどれか。",
+    options: [
+      "血糖値を上昇させる",
+      "グリコーゲン分解を促進する",
+      "筋肉や脂肪組織でのグルコース取り込みを促進する",
+      "糖新生を促進する"
+    ],
+    answer: 2,
+    explanation: "インスリンは膵臓のβ細胞から分泌される降血糖ホルモンです。主な作用は①筋肉・脂肪組織でのグルコース取り込み促進（GLUT4の細胞膜移行）②グリコーゲン合成促進③脂肪合成促進④糖新生抑制です。グリコーゲン分解と糖新生を促進するのはグルカゴンです。"
+  },
+  {
+    year: 38,
+    category: "人体の構造と機能",
+    question: "消化管ホルモンに関する記述として正しいのはどれか。",
+    options: [
+      "ガストリンは十二指腸のS細胞から分泌される",
+      "セクレチンは胃酸分泌を促進する",
+      "コレシストキニン（CCK）は膵液分泌と胆嚢収縮を促進する",
+      "グレリンは食欲を抑制するホルモンである"
+    ],
+    answer: 2,
+    explanation: "コレシストキニン（CCK）は十二指腸のI細胞から分泌され、膵液（消化酵素）の分泌促進と胆嚢収縮（胆汁の放出）を促します。ガストリンは胃のG細胞から分泌、セクレチンは胃酸分泌を抑制し膵液（重炭酸）を促進、グレリンは胃から分泌される食欲促進ホルモンです。"
+  },
+  {
+    year: 38,
+    category: "人体の構造と機能",
+    question: "アミノ酸の代謝に関する記述として誤っているのはどれか。",
+    options: [
+      "アミノ基転移反応（トランスアミナーゼ）にはビタミンB6が必要である",
+      "アンモニアは主に肝臓で尿素回路により尿素に変換される",
+      "フェニルケトン尿症はチロシンからフェニルアラニンへの変換異常である",
+      "分岐鎖アミノ酸（BCAA）は主に筋肉で代謝される"
+    ],
+    answer: 2,
+    explanation: "フェニルケトン尿症はフェニルアラニン水酸化酵素の欠損により、フェニルアラニンからチロシンへの変換が障害される疾患です（正常はフェニルアラニン→チロシン）。アミノ基転移にはPLP（ビタミンB6の活性型）が補酵素として必要で、BCAAは肝臓では代謝されにくく主に骨格筋で代謝されます。"
+  },
+  {
+    year: 38,
+    category: "応用栄養学",
+    question: "妊娠中期（14〜27週）の推定エネルギー付加量として正しいのはどれか（日本人の食事摂取基準2020年版）。",
+    options: [
+      "+50 kcal/日",
+      "+250 kcal/日",
+      "+450 kcal/日",
+      "+650 kcal/日"
+    ],
+    answer: 1,
+    explanation: "日本人の食事摂取基準2020年版では、妊娠中期のエネルギー付加量は+250 kcal/日、妊娠初期は+50 kcal/日、妊娠後期は+450 kcal/日とされています。胎児の発育や母体の組織増加に対応するための付加量です。"
+  },
+  {
+    year: 38,
+    category: "応用栄養学",
+    question: "高齢者の身体的特徴として誤っているのはどれか。",
+    options: [
+      "基礎代謝量が低下する",
+      "体脂肪率が増加する",
+      "消化吸収能が低下する",
+      "体水分量が増加する"
+    ],
+    answer: 3,
+    explanation: "高齢者では体水分量（特に細胞内液）が減少します。高齢者の特徴として、筋肉量（除脂肪体重）の減少、基礎代謝の低下、体脂肪率の増加、消化吸収能の低下などが挙げられます。脱水に気づきにくくなることも重要な特徴です。"
+  },
+  {
+    year: 38,
+    category: "応用栄養学",
+    question: "授乳期における葉酸の付加量（推奨量）として正しいのはどれか。",
+    options: [
+      "+80 μg/日",
+      "+100 μg/日",
+      "+140 μg/日",
+      "+240 μg/日"
+    ],
+    answer: 1,
+    explanation: "授乳期の葉酸推奨量付加量は+100 μg/日です（母乳中への分泌量を加味）。妊娠初期の葉酸は神経管閉鎖障害予防のため+240 μg/日の付加量が必要です。食事以外にサプリメントでの摂取も推奨されています。"
+  },
+  {
+    year: 38,
+    category: "人体の構造と機能",
+    question: "腎臓の構造と機能に関する記述として正しいのはどれか。",
+    options: [
+      "糸球体で濾過された原尿の量は1日あたり約1.5Lである",
+      "ボーマン嚢は尿細管の一部である",
+      "近位尿細管ではグルコースや水の大部分が再吸収される",
+      "バソプレシン（ADH）は尿量を増やす働きがある"
+    ],
+    answer: 2,
+    explanation: "近位尿細管ではグルコースのほぼ全量、Na+、水などが再吸収されます。糸球体での原尿生成量は1日約150〜180Lで、その99%が再吸収され最終的な尿量は約1.5Lとなります。バソプレシン（ADH）は集合管での水の再吸収を促進し、尿量を減らします。ボーマン嚢は腎小体を構成します。"
+  },
+  {
+    year: 38,
+    category: "応用栄養学",
+    question: "乳幼児期の栄養に関する記述として正しいのはどれか。",
+    options: [
+      "生後6か月以降は母乳のみで必要な栄養素を全て摂取できる",
+      "離乳食は生後5〜6か月頃から開始するのが目安である",
+      "離乳食完了は生後12か月以前が必須である",
+      "乳児期の体重あたりのエネルギー必要量は成人より少ない"
+    ],
+    answer: 1,
+    explanation: "厚生労働省の「授乳・離乳の支援ガイド（2019年改定版）」では、離乳開始の目安は生後5〜6か月頃とされています。生後6か月以降は母乳だけでは鉄・亜鉛等が不足するため離乳食が必要です。乳児の体重あたりエネルギー必要量は成人より多く（成長・体温維持のため）、離乳完了は概ね生後12〜18か月が目安です。"
+  },
+  {
+    year: 38,
+    category: "人体の構造と機能",
+    question: "脂質の代謝に関する記述として正しいのはどれか。",
+    options: [
+      "脂肪酸のβ酸化はミトコンドリアで行われ、ATPを産生する",
+      "コレステロールはエネルギー源として利用されやすい",
+      "ケトン体は脂質の過剰摂取時のみ産生される",
+      "リポタンパク質リパーゼはVLDLに含まれる脂質を増やす"
+    ],
+    answer: 0,
+    explanation: "脂肪酸のβ酸化はミトコンドリアマトリックスで行われ、アセチルCoAを生成してTCAサイクルでATPを産生します。コレステロールはエネルギー源として利用されません（細胞膜・ホルモン・胆汁酸の材料）。ケトン体は飢餓・糖尿病などの糖質不足時にも産生されます。リポタンパク質リパーゼはVLDLのトリグリセリドを分解します。"
+  },
+  {
+    year: 38,
+    category: "応用栄養学",
+    question: "骨粗鬆症の予防に関係する栄養素の組み合わせとして正しいのはどれか。",
+    options: [
+      "カルシウム・ビタミンD・ビタミンK",
+      "鉄・亜鉛・ヨウ素",
+      "ビタミンB1・ビタミンB2・ナイアシン",
+      "ビタミンC・葉酸・ビタミンB12"
+    ],
+    answer: 0,
+    explanation: "骨粗鬆症予防に重要な栄養素は、①カルシウム（骨の主成分）、②ビタミンD（カルシウムの腸管吸収促進・骨代謝調節）、③ビタミンK（骨タンパク質であるオステオカルシンの活性化）です。これらを十分摂取し、適度な運動を行うことが骨粗鬆症予防に重要です。"
+  },
+
+  // ================================================================
+  // 第39回（2025年）：食品衛生学・社会・環境と健康 中心
+  // ================================================================
+
+  {
+    year: 39,
+    category: "食品衛生学",
+    question: "食中毒の原因となる細菌に関する記述として正しいのはどれか。",
+    options: [
+      "サルモネラは芽胞を形成するため加熱で殺菌できない",
+      "腸炎ビブリオは海産魚介類が主な感染源で、真水（低食塩）に弱い",
+      "黄色ブドウ球菌の毒素は加熱により容易に不活化される",
+      "カンピロバクターは大量菌数を摂取しないと発症しない"
+    ],
+    answer: 1,
+    explanation: "腸炎ビブリオは好塩性細菌で、海産魚介類（刺身など）が主な感染源です。真水（低食塩濃度）に弱く、流水での洗浄が有効です。サルモネラは芽胞を形成しない（芽胞形成菌：ウェルシュ菌・ボツリヌス菌・セレウス菌など）。黄色ブドウ球菌の毒素（エンテロトキシン）は耐熱性があり100℃30分でも不活化されません。カンピロバクターは少量菌数（数百個程度）でも発症します。"
+  },
+  {
+    year: 39,
+    category: "食品衛生学",
+    question: "ノロウイルス食中毒に関する記述として正しいのはどれか。",
+    options: [
+      "細菌性食中毒に分類される",
+      "二枚貝（カキなど）の生食が主な原因食品の一つである",
+      "患者の便中のウイルスは1週間以内に消失する",
+      "アルコール消毒が最も有効な消毒法である"
+    ],
+    answer: 1,
+    explanation: "ノロウイルスはウイルス性食中毒で、カキなど二枚貝の生食や、感染した食品取扱者からの二次汚染が主な原因です。患者便中のウイルスは回復後も2〜3週間排出されることがあります。アルコール消毒はノロウイルスに対して効果が低く、次亜塩素酸ナトリウム（塩素系）消毒が有効です。"
+  },
+  {
+    year: 39,
+    category: "食品衛生学",
+    question: "自然毒食中毒に関する記述として正しいのはどれか。",
+    options: [
+      "フグ毒（テトロドトキシン）は肝臓のみに含まれる",
+      "毒キノコのアマニタトキシン（アマトキシン）は加熱で無毒化される",
+      "ジャガイモのソラニンは主に芽や皮の緑色部位に多く含まれる",
+      "シガトキシンは加熱により毒性がなくなる"
+    ],
+    answer: 2,
+    explanation: "ジャガイモのソラニン（ソラニン・チャコニン）は、芽・皮の緑色部位に多く含まれるグリコアルカロイドです。フグ毒（テトロドトキシン）は卵巣・肝臓・皮膚などに含まれます。毒キノコのアマトキシンは耐熱性があり加熱では無毒化されません。シガトキシン（シガテラ毒）も耐熱性があります。"
+  },
+  {
+    year: 39,
+    category: "食品衛生学",
+    question: "食品の保存方法と原理に関する記述として正しいのはどれか。",
+    options: [
+      "塩蔵（塩漬け）は水分活性を高めることで保存性を向上させる",
+      "燻製（スモーク）は乾燥・殺菌成分（フェノール類）・pH低下などの組み合わせで保存性を高める",
+      "砂糖漬け（ジャム等）は水分活性を上げることで微生物増殖を抑制する",
+      "紫外線照射は食品内部まで殺菌できる"
+    ],
+    answer: 1,
+    explanation: "燻製は①乾燥（水分活性の低下）、②煙中のフェノール類・有機酸などの抗菌成分、③pH低下、④塩漬けの組み合わせで保存性を高めます。塩蔵・砂糖漬けはいずれも水分活性を低下させることで微生物増殖を抑制します。紫外線は表面殺菌に有効ですが、食品内部には届きません。"
+  },
+  {
+    year: 39,
+    category: "社会・環境と健康",
+    question: "疫学研究デザインに関する記述として正しいのはどれか。",
+    options: [
+      "コホート研究は後ろ向き研究の一種である",
+      "症例対照研究（ケースコントロール研究）は相対危険度を直接計算できる",
+      "ランダム化比較試験（RCT）は観察研究の中で最も証拠レベルが高い",
+      "コホート研究では曝露群と非曝露群を前向きに追跡し、罹患率比（相対危険度）を算出できる"
+    ],
+    answer: 3,
+    explanation: "コホート研究は（主に）前向き研究であり、曝露群と非曝露群を追跡して相対危険度（RR）や寄与危険度が算出できます。症例対照研究はオッズ比を算出します（相対危険度は直接計算できない）。RCTは観察研究ではなく介入研究です。証拠レベルはシステマティックレビュー＞RCT＞コホート研究の順です。"
+  },
+  {
+    year: 39,
+    category: "食品衛生学",
+    question: "食品中の化学物質に関する記述として正しいのはどれか。",
+    options: [
+      "アクリルアミドは水産物に特有の化学物質である",
+      "ヘテロサイクリックアミンは食品を高温加熱・焦がした際に生成される",
+      "ダイオキシン類は水溶性のため尿中に排泄される",
+      "メチル水銀は植物性食品に多く含まれる"
+    ],
+    answer: 1,
+    explanation: "ヘテロサイクリックアミン（HCA）は、肉・魚などたんぱく質豊富な食品を高温（180〜200℃以上）で加熱した際に、アミノ酸やクレアチンなどから生成される変異原性物質です。アクリルアミドはでんぷんを高温加熱した際（フライドポテト、ポテトチップスなど）に生成されます。ダイオキシン類は脂溶性で食物連鎖で蓄積します。メチル水銀は魚介類（特に大型魚）に多く含まれます。"
+  },
+  {
+    year: 39,
+    category: "社会・環境と健康",
+    question: "健康日本21（第三次）に関する記述として正しいのはどれか。",
+    options: [
+      "2013年から2022年まで推進された計画である",
+      "2024年度から推進が開始された計画で、「全ての国民が健やかで心豊かに生活できる持続可能な社会の実現」を目標とする",
+      "目標指標は疾病の有病率のみである",
+      "都道府県が独自に策定する計画である"
+    ],
+    answer: 1,
+    explanation: "健康日本21（第三次）は2024年度から2035年度までの12年間の計画で、「全ての国民が健やかで心豊かに生活できる持続可能な社会の実現」をビジョンとしています。健康日本21（第二次）は2013〜2023年度でした。健康日本21は国が策定する国民健康づくり計画で、多岐にわたる目標指標が設定されています。"
+  },
+  {
+    year: 39,
+    category: "社会・環境と健康",
+    question: "メタボリックシンドロームの診断基準として正しいのはどれか（日本の基準）。",
+    options: [
+      "腹囲：男性90cm以上、女性85cm以上",
+      "腹囲：男性85cm以上、女性90cm以上がウエスト周囲径の基準であり、これに加えて血糖・血圧・脂質のうち2項目以上が該当",
+      "腹囲に関係なく、血糖・血圧・脂質の3項目全てが異常な場合に診断される",
+      "BMI 30以上が必須条件である"
+    ],
+    answer: 1,
+    explanation: "メタボリックシンドロームの日本の診断基準は、①ウエスト周囲径（腹囲）：男性85cm以上、女性90cm以上、②血清脂質：中性脂肪150mg/dL以上かつ/またはHDL 40mg/dL未満、③血圧：130/85mmHg以上、④血糖：空腹時血糖110mg/dL以上、の①が必須で②〜④のうち2項目以上が該当する場合に診断されます。"
+  },
+  {
+    year: 39,
+    category: "食品衛生学",
+    question: "残留農薬に関する記述として正しいのはどれか。",
+    options: [
+      "食品衛生法によるポジティブリスト制度では、基準値が設定されていない農薬は使用が自由である",
+      "ポジティブリスト制度では、基準値が設定されていない農薬については一律基準（0.01 ppm）が適用される",
+      "有機農産物には農薬が全く使用されない",
+      "洗浄・加熱により農薬は全て除去できる"
+    ],
+    answer: 1,
+    explanation: "2006年に導入されたポジティブリスト制度では、基準値が設定されていない農薬・飼料添加物・動物用医薬品については、一律基準（0.01 ppm）を超えて食品に残留してはならないとされています。有機農産物では化学合成農薬・化学肥料の使用を原則禁止していますが、一部の天然物由来農薬は使用可能です。"
+  },
+  {
+    year: 39,
+    category: "社会・環境と健康",
+    question: "日本の死亡統計に関する記述として正しいのはどれか。",
+    options: [
+      "悪性新生物（がん）は死亡原因の第3位である",
+      "悪性新生物は死亡原因の第1位であり、1981年以降首位が続いている",
+      "老衰による死亡は減少傾向にある",
+      "自殺は死亡原因に含まれない"
+    ],
+    answer: 1,
+    explanation: "悪性新生物（がん）は1981年から日本人の死亡原因の第1位を続けています。2022年の死亡統計では、①悪性新生物（がん）、②心疾患、③老衰、④脳血管疾患の順です。老衰による死亡は増加傾向にあります（高齢者人口の増加に伴い）。自殺は死亡統計に含まれます。"
+  }
+];
+
+// =====================================================
+// アプリの状態管理（ゲームの進行状況を管理する変数）
+// =====================================================
+let currentIndex = 0;    // 現在の問題番号（0始まり）
+let score = 0;           // 正解数
+let streak = 0;          // 連続正解数
+let answered = false;    // 現在の問題に回答済みかどうか
+let selectedYear = 0;    // 選択した年度（0=全年度）
+
+// カテゴリ別の正解・出題数を記録するオブジェクト
+let categoryStats = {};
+
+// 実際に出題する問題（年度でフィルタ後にシャッフルしたもの）
+let shuffledQuestions = [];
+
+// =====================================================
+// 配列をランダムにシャッフルする関数（Fisher-Yates法）
+// =====================================================
+function shuffleArray(array) {
+  const arr = [...array]; // 元の配列をコピー（破壊しない）
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]]; // 要素を交換
+  }
+  return arr;
+}
+
+// =====================================================
+// 年度を選択してクイズを開始する関数
+// year: 35〜39 で特定年度、0 で全年度
+// =====================================================
+function startQuizByYear(year) {
+  // 選択した年度を保存（リトライ時に使用）
+  selectedYear = year;
+
+  // 年度に応じて問題をフィルタリング
+  let filteredQuestions;
+  if (year === 0) {
+    // 全年度：全問をシャッフル
+    filteredQuestions = questions;
+  } else {
+    // 指定年度の問題のみ抽出
+    filteredQuestions = questions.filter(q => q.year === year);
+  }
+
+  // 問題をシャッフルして出題順を決める
+  shuffledQuestions = shuffleArray(filteredQuestions);
+
+  // 状態をリセット
+  currentIndex = 0;
+  score = 0;
+  streak = 0;
+  categoryStats = {};
+  answered = false;
+
+  // 年度選択画面を隠して問題画面を表示
+  document.getElementById('year-select-screen').style.display = 'none';
+  document.getElementById('statsBar').style.display = 'flex';
+  document.getElementById('progressContainer').style.display = 'block';
+  document.getElementById('questionCard').style.display = 'block';
+
+  // 最初の問題を表示
+  showQuestion();
+}
+
+// =====================================================
+// 問題を表示する関数
+// =====================================================
+function showQuestion() {
+  answered = false;
+  const q = shuffledQuestions[currentIndex];
+
+  // カテゴリバッジの設定（カテゴリ名に対応した色クラスを付与）
+  const badge = document.getElementById('categoryBadge');
+  badge.textContent = q.category;
+  badge.className = `category-badge cat-${q.category}`;
+
+  // 問題番号の表示（「問題 1 / 10」のような形式）
+  document.getElementById('questionNumber').textContent =
+    `問題 ${currentIndex + 1} / ${shuffledQuestions.length}`;
+
+  // 問題文の表示
+  document.getElementById('questionText').textContent = q.question;
+
+  // 選択肢の表示（A〜Dのラベル付きボタンを生成）
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  const labels = ['A', 'B', 'C', 'D'];
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${labels[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  // 解説と次へボタンを非表示にリセット
+  const expBox = document.getElementById('explanationBox');
+  expBox.style.display = 'none';
+  expBox.className = 'explanation-box';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  // カードのアニメーションを再実行（新しい問題のたびにアニメーション）
+  const card = document.getElementById('questionCard');
+  card.style.animation = 'none';
+  card.offsetHeight; // リフロー強制（アニメーションをリセットするためのトリック）
+  card.style.animation = 'cardIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+
+  // 統計バーとプログレスバーを更新
+  updateStats();
+  updateProgress();
+}
+
+// =====================================================
+// 回答選択時の処理
+// selectedIndex: ユーザーが選んだ選択肢のインデックス（0〜3）
+// =====================================================
+function selectAnswer(selectedIndex) {
+  if (answered) return; // 既に回答済みなら何もしない
+  answered = true;
+
+  const q = shuffledQuestions[currentIndex];
+  const buttons = document.querySelectorAll('.option-btn');
+  const isCorrect = selectedIndex === q.answer;
+
+  // カテゴリ別統計の更新（初回のカテゴリは初期化）
+  if (!categoryStats[q.category]) {
+    categoryStats[q.category] = { correct: 0, total: 0 };
+  }
+  categoryStats[q.category].total++;
+
+  // 全ての選択肢ボタンを無効化（再クリック防止）
+  buttons.forEach(btn => btn.disabled = true);
+
+  if (isCorrect) {
+    // 正解の場合：スコアと連続正解を更新、正解ボタンを緑にハイライト
+    score++;
+    streak++;
+    categoryStats[q.category].correct++;
+    buttons[selectedIndex].classList.add('correct');
+
+    // 3連続以上の正解でポップアップを表示
+    if (streak >= 3) {
+      showStreakPopup(streak);
+    }
+  } else {
+    // 不正解の場合：連続正解をリセット、選んだボタンを赤・正解ボタンを緑にハイライト
+    streak = 0;
+    buttons[selectedIndex].classList.add('wrong');
+    buttons[q.answer].classList.add('correct'); // 正解の選択肢も表示
+  }
+
+  // 解説ボックスを表示（正解・不正解で色が変わる）
+  const expBox = document.getElementById('explanationBox');
+  expBox.style.display = 'block';
+  expBox.className = `explanation-box ${isCorrect ? 'correct-exp' : 'wrong-exp'}`;
+  document.getElementById('expIcon').textContent = isCorrect ? '✅' : '❌';
+  document.getElementById('expTitle').textContent = isCorrect ? '正解！' : '不正解…';
+  document.getElementById('expBody').textContent = q.explanation;
+
+  // 次へボタンを表示（最後の問題なら「結果を見る」に変更）
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.style.display = 'block';
+  nextBtn.textContent = currentIndex === shuffledQuestions.length - 1
+    ? '結果を見る 🏆'
+    : '次の問題へ →';
+
+  // 統計バーをリアルタイム更新
+  updateStats();
+}
+
+// =====================================================
+// 次の問題へ移動する関数
+// =====================================================
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= shuffledQuestions.length) {
+    showResult(); // 全問終了したら結果画面へ
+  } else {
+    showQuestion(); // 次の問題を表示
+  }
+}
+
+// =====================================================
+// 統計バーの更新（問題番号・スコア・連続正解）
+// =====================================================
+function updateStats() {
+  document.getElementById('statQuestion').textContent =
+    `${currentIndex + 1} / ${shuffledQuestions.length}`;
+  document.getElementById('statScore').textContent = score;
+
+  // 連続3以上でゴールドに光るクラスを付与
+  const streakEl = document.getElementById('statStreak');
+  streakEl.textContent = streak;
+  streakEl.className = streak >= 3 ? 'stats-value streak-highlight' : 'stats-value';
+}
+
+// =====================================================
+// プログレスバーの更新（現在の進捗を%で表示）
+// =====================================================
+function updateProgress() {
+  const pct = (currentIndex / shuffledQuestions.length) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+// =====================================================
+// 連続正解ポップアップを表示する関数
+// count: 現在の連続正解数
+// =====================================================
+function showStreakPopup(count) {
+  const popup = document.getElementById('streakPopup');
+  // 連続正解数に応じたメッセージを表示
+  const messages = {
+    3: '🔥 3連続正解！',
+    4: '⚡ 4連続正解！',
+    5: '💥 5連続正解！',
+    6: '🌟 6連続正解！',
+    7: '🚀 7連続正解！！',
+    8: '👑 8連続正解！！',
+    9: '🎯 9連続正解！！',
+    10: '🏆 パーフェクト連続！！'
+  };
+  popup.textContent = messages[count] || `🔥 ${count}連続正解！！`;
+  popup.className = 'streak-popup show';
+
+  // 1.5秒後に消える（フェードアウト）
+  setTimeout(() => {
+    popup.className = 'streak-popup hide';
+    setTimeout(() => { popup.className = 'streak-popup'; }, 300);
+  }, 1500);
+}
+
+// =====================================================
+// 星の数を計算する関数（スコア率に応じて1〜5星）
+// =====================================================
+function calcStars(correct, total) {
+  const rate = correct / total;
+  if (rate >= 0.9) return 5;
+  if (rate >= 0.75) return 4;
+  if (rate >= 0.6) return 3;
+  if (rate >= 0.4) return 2;
+  return 1;
+}
+
+// =====================================================
+// 結果画面を表示する関数
+// 全問終了後に呼ばれる
+// =====================================================
+function showResult() {
+  // 問題カードと統計バーを非表示にする
+  document.getElementById('questionCard').style.display = 'none';
+  document.getElementById('statsBar').style.display = 'none';
+  document.getElementById('progressContainer').style.display = 'none';
+
+  // 結果画面を表示
+  const resultScreen = document.getElementById('resultScreen');
+  resultScreen.style.display = 'block';
+
+  const total = shuffledQuestions.length;
+  const rate = score / total;
+
+  // スコアに応じて絵文字・タイトル・サブタイトルを変える
+  let emoji, title, subtitle;
+  if (rate >= 0.9) {
+    emoji = '🏆'; title = '素晴らしい！合格レベルです！'; subtitle = '管理栄養士試験に向けて自信を持って！';
+  } else if (rate >= 0.75) {
+    emoji = '🎉'; title = '優秀です！もう一歩！'; subtitle = '苦手な分野を重点的に復習しましょう。';
+  } else if (rate >= 0.6) {
+    emoji = '📚'; title = '合格圏内！頑張っています'; subtitle = '引き続き各カテゴリをバランスよく学習しよう。';
+  } else if (rate >= 0.4) {
+    emoji = '💪'; title = 'もう少し！復習が必要です'; subtitle = '間違えた問題の解説を読み返しましょう。';
+  } else {
+    emoji = '🌱'; title = 'まだまだこれから！'; subtitle = '基礎からじっくり学習し直しましょう。';
+  }
+
+  // 結果画面の各要素に値をセット
+  document.getElementById('resultEmoji').textContent = emoji;
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSubtitle').textContent = subtitle;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('resultTotal').textContent = `/ ${total}`;
+
+  // 星の表示（5段階評価）
+  const stars = calcStars(score, total);
+  const starsEl = document.getElementById('starsContainer');
+  starsEl.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    const star = document.createElement('span');
+    star.className = 'star';
+    star.textContent = i < stars ? '⭐' : '☆';
+    starsEl.appendChild(star);
+  }
+
+  // カテゴリ別正解率の棒グラフを表示（出題されたカテゴリのみ）
+  const breakdownEl = document.getElementById('breakdownItems');
+  breakdownEl.innerHTML = '';
+  Object.entries(categoryStats).forEach(([cat, stat]) => {
+    const pct = Math.round((stat.correct / stat.total) * 100);
+    const item = document.createElement('div');
+    item.className = 'breakdown-item';
+    item.innerHTML = `
+      <span class="breakdown-cat">${cat}</span>
+      <div class="breakdown-bar-bg">
+        <div class="breakdown-bar-fill" style="width:0%" data-pct="${pct}"></div>
+      </div>
+      <span class="breakdown-pct">${pct}%</span>
+    `;
+    breakdownEl.appendChild(item);
+  });
+
+  // 棒グラフをアニメーションで伸ばす（少し遅延させてから）
+  setTimeout(() => {
+    document.querySelectorAll('.breakdown-bar-fill').forEach(el => {
+      el.style.width = el.dataset.pct + '%';
+    });
+  }, 400);
+
+  // プログレスバーを100%に
+  document.getElementById('progressBar').style.width = '100%';
+
+  // 高スコア（80%以上）で紙吹雪エフェクトを表示
+  if (rate >= 0.8) {
+    launchConfetti();
+  }
+}
+
+// =====================================================
+// 紙吹雪（コンフェッティ）を生成する関数
+// CSSアニメーションのみで実装（外部ライブラリ不要）
+// =====================================================
+function launchConfetti() {
+  const wrapper = document.getElementById('confettiWrapper');
+  wrapper.innerHTML = '';
+
+  // 紙吹雪のカラーリスト
+  const colors = [
+    '#ff6b6b','#ffd93d','#6bcb77','#4d96ff',
+    '#ff922b','#cc5de8','#51cf66','#f03e3e',
+    '#74c0fc','#ffa94d'
+  ];
+  const shapes = ['square', 'rect', 'circle'];
+
+  // 80個の紙吹雪ピースを生成
+  for (let i = 0; i < 80; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const left = Math.random() * 100;          // 水平位置（%）
+    const duration = 2.5 + Math.random() * 3; // 落下時間（秒）
+    const delay = Math.random() * 2;           // 開始遅延（秒）
+    const size = 6 + Math.random() * 10;       // サイズ（px）
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+
+    piece.style.left = left + '%';
+    piece.style.width = size + 'px';
+    piece.style.height = shape === 'rect' ? (size * 0.4) + 'px' : size + 'px';
+    piece.style.background = color;
+    piece.style.borderRadius = shape === 'circle' ? '50%' : '2px';
+    piece.style.animationDuration = duration + 's';
+    piece.style.animationDelay = delay + 's';
+
+    wrapper.appendChild(piece);
+  }
+
+  // 7秒後に紙吹雪を後片付け
+  setTimeout(() => {
+    wrapper.innerHTML = '';
+  }, 7000);
+}
+
+// =====================================================
+// 同じ年度でもう一度クイズをやり直す関数
+// 「もう一度チャレンジ」ボタンから呼ばれる
+// =====================================================
+function retryCurrentYear() {
+  // 紙吹雪を片付ける
+  document.getElementById('confettiWrapper').innerHTML = '';
+
+  // 結果画面を隠して、同じ年度でクイズを再開
+  document.getElementById('resultScreen').style.display = 'none';
+
+  // 保存していた年度で再スタート
+  startQuizByYear(selectedYear);
+}
+
+// =====================================================
+// 年度選択画面に戻る関数
+// 「年度選択に戻る」ボタンから呼ばれる
+// =====================================================
+function goToYearSelect() {
+  // 紙吹雪を片付ける
+  document.getElementById('confettiWrapper').innerHTML = '';
+
+  // 結果画面を隠す
+  document.getElementById('resultScreen').style.display = 'none';
+
+  // 統計バーとプログレスバーも隠す
+  document.getElementById('statsBar').style.display = 'none';
+  document.getElementById('progressContainer').style.display = 'none';
+
+  // プログレスバーをリセット
+  document.getElementById('progressBar').style.width = '0%';
+
+  // 年度選択画面を再表示
+  document.getElementById('year-select-screen').style.display = 'block';
+}
+
+// =====================================================
+// 初期化処理（ページ読み込み時に自動実行）
+// 年度選択画面が最初に表示される
+// =====================================================
+// 特に追加の初期化処理は不要（HTMLのデフォルト表示で年度選択画面が見える）
+</script>
+
+</body>
+</html>
