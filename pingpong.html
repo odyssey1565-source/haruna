@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卓球サークル TT Spirits | 第三の居場所、真剣に楽しく！</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap');
+
+    :root {
+      --primary: #e84a5f;
+      --primary-dark: #c0392b;
+      --accent: #f9a825;
+      --accent2: #2ecc71;
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #21262d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --ball-color: #ff6b35;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ========== ナビゲーション ========== */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(232, 74, 95, 0.2);
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-logo {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--primary);
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-logo .ball-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--ball-color);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px rgba(255, 107, 53, 0.6);
+      animation: spin 4s linear infinite;
+      font-size: 0.9rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: color 0.2s;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links a:hover { color: var(--primary); }
+
+    .nav-cta {
+      background: var(--primary);
+      color: white !important;
+      padding: 8px 20px;
+      border-radius: 24px;
+      transition: background 0.2s, transform 0.1s !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--primary-dark) !important;
+      transform: scale(1.04) !important;
+      color: white !important;
+    }
+
+    /* ========== ヒーロー ========== */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 80px 5% 60px;
+    }
+
+    /* 背景グリッド */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(232, 74, 95, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232, 74, 95, 0.07) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    }
+
+    .hero-content {
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(232, 74, 95, 0.15);
+      border: 1px solid rgba(232, 74, 95, 0.4);
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 6px 18px;
+      border-radius: 24px;
+      margin-bottom: 28px;
+      letter-spacing: 0.1em;
+    }
+
+    .hero-title {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 0%, #e84a5f 50%, #f9a825 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-concept {
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      letter-spacing: 0.15em;
+    }
+
+    .hero-concept span {
+      color: var(--accent);
+    }
+
+    .hero-desc {
+      font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 48px;
+      max-width: 620px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 16px 40px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(232, 74, 95, 0.4);
+      letter-spacing: 0.05em;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(232, 74, 95, 0.5);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid rgba(255,255,255,0.2);
+      padding: 16px 40px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: border-color 0.2s, color 0.2s;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* 浮かぶボール */
+    .floating-ball {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #ff8f65, var(--ball-color) 60%, #c0392b);
+      box-shadow: 0 8px 24px rgba(255, 107, 53, 0.35);
+      animation: floatBall linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes floatBall {
+      0% { transform: translateY(0) rotate(0deg); }
+      33% { transform: translateY(-30px) rotate(120deg); }
+      66% { transform: translateY(15px) rotate(240deg); }
+      100% { transform: translateY(0) rotate(360deg); }
+    }
+
+    /* ========== セクション共通 ========== */
+    section {
+      padding: 100px 5%;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900;
+      line-height: 1.3;
+      color: var(--text);
+    }
+
+    .section-title span {
+      color: var(--primary);
+    }
+
+    .section-sub {
+      margin-top: 16px;
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    /* ========== コンセプト ========== */
+    #concept {
+      background: var(--bg2);
+    }
+
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .concept-card {
+      background: var(--bg3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 40px 32px;
+      text-align: center;
+      transition: transform 0.25s, border-color 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .concept-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .concept-card:hover { transform: translateY(-6px); border-color: rgba(232, 74, 95, 0.3); }
+    .concept-card:hover::before { opacity: 1; }
+
+    .concept-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .concept-card h3 {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .concept-card p {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    /* ========== 活動情報 ========== */
+    #activity {
+      background: var(--bg);
+    }
+
+    .activity-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .activity-info {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .info-item {
+      background: var(--bg2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .info-item:hover { border-color: rgba(232, 74, 95, 0.3); }
+
+    .info-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(232, 74, 95, 0.12);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .info-body h4 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.1em;
+      margin-bottom: 6px;
+    }
+
+    .info-body p {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .info-body span {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .activity-table-wrap {
+      background: var(--bg2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 32px;
+    }
+
+    .activity-table-wrap h3 {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 24px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .schedule-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .schedule-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--bg3);
+      border-radius: 12px;
+      border-left: 3px solid var(--primary);
+    }
+
+    .schedule-item .day {
+      font-weight: 900;
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .schedule-item .time {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .schedule-item .tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(232, 74, 95, 0.15);
+      color: var(--primary);
+      letter-spacing: 0.05em;
+    }
+
+    .tag-open {
+      background: rgba(46, 204, 113, 0.15) !important;
+      color: var(--accent2) !important;
+    }
+
+    /* ========== メンバー紹介 ========== */
+    #members {
+      background: var(--bg2);
+    }
+
+    .members-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .member-card {
+      background: var(--bg3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: transform 0.25s, border-color 0.25s;
+    }
+
+    .member-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(232, 74, 95, 0.3);
+    }
+
+    .member-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: white;
+    }
+
+    .member-card h3 {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    .member-card .role {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .member-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .member-level {
+      display: inline-flex;
+      gap: 3px;
+      margin-top: 12px;
+    }
+
+    .level-star {
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    .level-star.empty {
+      color: rgba(255,255,255,0.15);
+    }
+
+    /* ========== FAQ ========== */
+    #faq {
+      background: var(--bg);
+    }
+
+    .faq-list {
+      max-width: 780px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .faq-item {
+      background: var(--bg2);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .faq-q {
+      padding: 22px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: var(--text);
+      gap: 16px;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .faq-q:hover { background: rgba(232, 74, 95, 0.06); }
+
+    .faq-q-text {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .faq-q .q-badge {
+      background: rgba(232, 74, 95, 0.15);
+      color: var(--primary);
+      font-weight: 900;
+      font-size: 0.85rem;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .faq-arrow {
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: transform 0.3s;
+      flex-shrink: 0;
+    }
+
+    .faq-item.open .faq-arrow { transform: rotate(180deg); }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+
+    .faq-item.open .faq-a { max-height: 300px; }
+
+    .faq-a-inner {
+      padding: 0 28px 22px 68px;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    /* ========== 入会 CTA ========== */
+    #join {
+      background: var(--bg2);
+    }
+
+    .join-wrap {
+      max-width: 700px;
+      margin: 0 auto;
+      text-align: center;
+      background: var(--bg3);
+      border: 1px solid rgba(232, 74, 95, 0.2);
+      border-radius: 28px;
+      padding: 60px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .join-wrap::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 240px;
+      height: 240px;
+      background: radial-gradient(circle, rgba(232, 74, 95, 0.12), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .join-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: -60px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(249, 168, 37, 0.1), transparent 70%);
+      border-radius: 50%;
+    }
+
+    .join-wrap .emoji-big {
+      font-size: 3.5rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .join-wrap h2 {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 900;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .join-wrap p {
+      font-size: 0.98rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 36px;
+    }
+
+    .join-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .join-form input,
+    .join-form select {
+      background: var(--bg2);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 14px 18px;
+      font-size: 0.95rem;
+      color: var(--text);
+      font-family: inherit;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    .join-form input:focus,
+    .join-form select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .join-form input::placeholder { color: var(--text-muted); }
+
+    .join-form select option { background: var(--bg2); }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(232, 74, 95, 0.35);
+      font-family: inherit;
+      letter-spacing: 0.05em;
+      margin-top: 4px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(232, 74, 95, 0.45);
+    }
+
+    /* ========== フッター ========== */
+    footer {
+      background: var(--bg);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 48px 5% 32px;
+      text-align: center;
+    }
+
+    .footer-logo {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .footer-concept {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      letter-spacing: 0.15em;
+      margin-bottom: 24px;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      list-style: none;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--primary); }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: rgba(139, 148, 158, 0.5);
+    }
+
+    /* ========== 統計 ========== */
+    .stats-strip {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      padding: 48px 5%;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .stat-item h3 {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-item p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.75);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    /* ========== 画像っぽいビジュアル ========== */
+    .court-visual {
+      background: var(--bg3);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 24px;
+      height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .court-inner {
+      width: 80%;
+      height: 70%;
+      border: 3px solid rgba(255,255,255,0.15);
+      border-radius: 4px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .court-net {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: rgba(255,255,255,0.2);
+      transform: translateX(-50%);
+    }
+
+    .court-net::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+    }
+
+    .court-ball {
+      width: 28px;
+      height: 28px;
+      background: radial-gradient(circle at 35% 35%, #ff8f65, var(--ball-color));
+      border-radius: 50%;
+      box-shadow: 0 6px 20px rgba(255, 107, 53, 0.5);
+      animation: bounceBall 2s ease-in-out infinite;
+    }
+
+    @keyframes bounceBall {
+      0%, 100% { transform: translate(40px, -20px); }
+      50% { transform: translate(-40px, 20px); }
+    }
+
+    .court-label {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      letter-spacing: 0.1em;
+    }
+
+    .paddle-icon {
+      position: absolute;
+      font-size: 2.5rem;
+      opacity: 0.15;
+    }
+
+    .paddle-icon:nth-child(1) { top: 20px; left: 20px; transform: rotate(-30deg); }
+    .paddle-icon:nth-child(2) { bottom: 20px; right: 20px; transform: rotate(150deg); }
+
+    /* ========== レスポンシブ ========== */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+
+      .activity-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .join-wrap {
+        padding: 40px 28px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ========== アニメーション ========== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate {
+      opacity: 0;
+      animation: fadeInUp 0.6s ease forwards;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+
+  </style>
+</head>
+<body>
+
+<!-- ナビゲーション -->
+<nav>
+  <div class="nav-logo">
+    <span class="ball-icon">🏓</span>
+    TT Spirits
+  </div>
+  <ul class="nav-links">
+    <li><a href="#concept">コンセプト</a></li>
+    <li><a href="#activity">活動案内</a></li>
+    <li><a href="#members">メンバー</a></li>
+    <li><a href="#faq">よくある質問</a></li>
+    <li><a href="#join" class="nav-cta">参加する</a></li>
+  </ul>
+</nav>
+
+<!-- 浮かぶボール装飾 -->
+<div class="floating-ball" style="width:60px;height:60px;top:15%;left:8%;animation-duration:6s;animation-delay:-1s;"></div>
+<div class="floating-ball" style="width:40px;height:40px;top:25%;right:10%;animation-duration:8s;animation-delay:-3s;opacity:0.5;"></div>
+<div class="floating-ball" style="width:20px;height:20px;top:60%;left:15%;animation-duration:5s;animation-delay:-2s;opacity:0.4;"></div>
+
+<!-- ヒーロー -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge animate delay-1">🏓 WELCOME TO TT SPIRITS</div>
+    <h1 class="hero-title animate delay-2">卓球サークル<br>TT Spirits</h1>
+    <p class="hero-concept animate delay-3">
+      <span>第三の居場所</span>、真剣に楽しく！
+    </p>
+    <p class="hero-desc animate delay-3">
+      仕事でも家庭でもない、あなただけの居場所。<br>
+      初心者から経験者まで、一緒に卓球を楽しみましょう。<br>
+      笑って、汗をかいて、また会いたくなるサークルです。
+    </p>
+    <div class="hero-buttons animate delay-4">
+      <a href="#join" class="btn-primary">✉️ 無料体験に申し込む</a>
+      <a href="#activity" class="btn-outline">📅 活動を見る</a>
+    </div>
+  </div>
+</section>
+
+<!-- 統計 -->
+<div class="stats-strip">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <h3>42<small style="font-size:1.2rem">名</small></h3>
+      <p>現在の会員数</p>
+    </div>
+    <div class="stat-item">
+      <h3>3<small style="font-size:1.2rem">年</small></h3>
+      <p>活動実績</p>
+    </div>
+    <div class="stat-item">
+      <h3>週<small style="font-size:1.2rem">2</small>回</h3>
+      <p>定期練習</p>
+    </div>
+    <div class="stat-item">
+      <h3>無<small style="font-size:1.2rem">料</small></h3>
+      <p>体験参加</p>
+    </div>
+  </div>
+</div>
+
+<!-- コンセプト -->
+<section id="concept">
+  <div class="section-header">
+    <span class="section-label">Our Concept</span>
+    <h2 class="section-title">なぜ「第三の居場所」<span>？</span></h2>
+    <p class="section-sub">
+      職場でも家庭でもない、ゆるく・深くつながれるコミュニティを目指しています。
+    </p>
+  </div>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <span class="concept-icon">🏠</span>
+      <h3>くつろげる雰囲気</h3>
+      <p>勝ち負けよりも「楽しかった！」が一番。誰もがリラックスして卓球を楽しめる空間づくりを大切にしています。</p>
+    </div>
+    <div class="concept-card">
+      <span class="concept-icon">🔥</span>
+      <h3>真剣に上達したい</h3>
+      <p>フォームやラリー技術もしっかり磨きたい方のために、上級者メンバーが丁寧にサポート。体験者歓迎です。</p>
+    </div>
+    <div class="concept-card">
+      <span class="concept-icon">🤝</span>
+      <h3>多様なつながり</h3>
+      <p>年齢・職業・経験レベルを超えた仲間との交流。練習後の食事会など、コート外の絆も大切にします。</p>
+    </div>
+    <div class="concept-card">
+      <span class="concept-icon">🌱</span>
+      <h3>初心者大歓迎</h3>
+      <p>卓球が初めてでも全く問題なし！基礎からやさしく教えます。ラケットの持ち方から始めましょう。</p>
+    </div>
+    <div class="concept-card">
+      <span class="concept-icon">🏆</span>
+      <h3>大会にも挑戦</h3>
+      <p>希望者は地域の大会やサークル対抗戦にも参加できます。目標があると練習がさらに楽しくなります！</p>
+    </div>
+    <div class="concept-card">
+      <span class="concept-icon">💬</span>
+      <h3>アフター卓球も充実</h3>
+      <p>練習後はみんなで近くのご飯屋さんへ。卓球で体を動かした後の食事は格別です。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 活動情報 -->
+<section id="activity">
+  <div class="section-header">
+    <span class="section-label">Activity</span>
+    <h2 class="section-title">活動<span>案内</span></h2>
+    <p class="section-sub">定期練習 & イベントの情報はこちら</p>
+  </div>
+  <div class="activity-wrap">
+    <div class="activity-info">
+      <div class="info-item">
+        <div class="info-icon">📍</div>
+        <div class="info-body">
+          <h4>活動場所</h4>
+          <p>○○市民体育館 卓球室</p>
+          <span>（最寄駅から徒歩5分）</span>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">📅</div>
+        <div class="info-body">
+          <h4>定期練習</h4>
+          <p>毎週火曜・土曜</p>
+          <span>臨時休みはLINEグループで連絡</span>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">💴</div>
+        <div class="info-body">
+          <h4>参加費</h4>
+          <p>月会費 ¥1,500 / 体験は無料</p>
+          <span>ラケット・ボールは無料貸し出しあり</span>
+        </div>
+      </div>
+      <div class="info-item">
+        <div class="info-icon">👤</div>
+        <div class="info-body">
+          <h4>対象</h4>
+          <p>18歳以上 経験不問</p>
+          <span>学生・社会人・シニアどなたでも</span>
+        </div>
+      </div>
+      <div class="court-visual" style="margin-top:8px;">
+        <span class="paddle-icon">🏓</span>
+        <span class="paddle-icon">🏓</span>
+        <div class="court-inner">
+          <div class="court-net"></div>
+          <div class="court-ball"></div>
+        </div>
+        <span class="court-label">TT Spirits 卓球コート</span>
+      </div>
+    </div>
+    <div>
+      <div class="activity-table-wrap">
+        <h3>📆 週間スケジュール</h3>
+        <ul class="schedule-list">
+          <li class="schedule-item">
+            <span class="day">火曜日</span>
+            <span class="time">19:00 〜 21:00</span>
+            <span class="tag">通常練習</span>
+          </li>
+          <li class="schedule-item">
+            <span class="day">土曜日</span>
+            <span class="time">10:00 〜 12:30</span>
+            <span class="tag tag-open">初心者歓迎</span>
+          </li>
+          <li class="schedule-item" style="border-left-color: var(--accent);">
+            <span class="day">月1回（日曜）</span>
+            <span class="time">13:00 〜 17:00</span>
+            <span class="tag" style="background:rgba(249,168,37,0.15);color:var(--accent);">交流戦</span>
+          </li>
+          <li class="schedule-item" style="border-left-color: var(--accent2);">
+            <span class="day">不定期</span>
+            <span class="time">随時</span>
+            <span class="tag tag-open">アフター飯</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="activity-table-wrap" style="margin-top:20px;">
+        <h3>🗓 直近イベント</h3>
+        <ul class="schedule-list">
+          <li class="schedule-item" style="flex-direction:column;align-items:flex-start;gap:6px;border-left-color:var(--accent);">
+            <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+              <span class="day">5月10日（土）</span>
+              <span class="tag" style="background:rgba(249,168,37,0.15);color:var(--accent);">大会</span>
+            </div>
+            <span class="time" style="font-size:0.9rem;color:var(--text);">第12回 TT Spirits カップ</span>
+            <span style="font-size:0.8rem;color:var(--text-muted);">初心者・中級者部門あり。飛び入り参加歓迎！</span>
+          </li>
+          <li class="schedule-item" style="flex-direction:column;align-items:flex-start;gap:6px;">
+            <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+              <span class="day">6月1日（日）</span>
+              <span class="tag tag-open">合宿</span>
+            </div>
+            <span class="time" style="font-size:0.9rem;color:var(--text);">日帰り合宿＆BBQ</span>
+            <span style="font-size:0.8rem;color:var(--text-muted);">終日卓球＋夕方にバーベキュー！会員限定</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- メンバー -->
+<section id="members">
+  <div class="section-header">
+    <span class="section-label">Members</span>
+    <h2 class="section-title">こんな<span>仲間</span>がいます</h2>
+    <p class="section-sub">多様なバックグラウンドを持つメンバーが活躍中！</p>
+  </div>
+  <div class="members-grid">
+    <div class="member-card">
+      <div class="member-avatar" style="background: linear-gradient(135deg, var(--primary), #c0392b);">田</div>
+      <h3>田中 誠一</h3>
+      <span class="role">代表 / 創設者</span>
+      <p>元学生チャンピオン。技術指導もおまかせ。「卓球は人生」が口癖。</p>
+      <div class="member-level">
+        <span class="level-star">★</span>
+        <span class="level-star">★</span>
+        <span class="level-star">★</span>
+        <span class="level-star">★</span>
+        <span class="level-star">★</span>
+      </div>
+    </div>
+    <div class="member-card">
+      <div class="member-avatar" style="background: linear-gradient(135deg, #9b59b6, #6c3483);">山</div>
+      <h3>山田 あかね</h3>
+      <span class="role">副代表 / 初心者担当</span>
+      <p>社会人2年目。3ヶ月前に始めた超成長株！初心者のことをいちばんわかってます。</p>
+      <div class="member-level">
+        <span class="level-star">★</span>
+        <span class="level-star">★</span>
+        <span class="level-star">★</span>
+        <span class="level-star empty">★</span>
+        <span class="level-star empty">★</span>
+      </div>
+    </div>
+    <div class="member-card">
+      <div class="member-avatar" style="background: linear-gradient(135deg, #27ae60, #1a6b3a);">佐</div>
+      <h3>佐藤 健太</h3>
+      <span class="role">イベント担当</span>
+      <p>アフター卓球の幹事が得意。おすすめのお店は全部チェック済み。</p>
+      <div class="member-level">
+        <span class="level-star">★</span>
+        <span class="level-star">★</span>
+        <span class="level-star">★</span>
+        <span class="level-star">★</span>
+        <span class="level-star empty">★</span>
+      </div>
+    </div>
+    <div class="member-card">
+      <div class="member-avatar" style="background: linear-gradient(135deg, #e67e22, #ca6f1e);">中</div>
+      <h3>中村 亮子</h3>
+      <span class="role">広報 / SNS担当</span>
+      <p>デザイナー。サークルのロゴも作ってくれた。卓球歴は1年半で急成長中。</p>
+      <div class="member-level">
+        <span class="level-star">★</span>
+        <span class="level-star">★</span>
+        <span class="level-star">★</span>
+        <span class="level-star empty">★</span>
+        <span class="level-star empty">★</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-header">
+    <span class="section-label">FAQ</span>
+    <h2 class="section-title">よくある<span>質問</span></h2>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div class="faq-q-text">
+          <span class="q-badge">Q</span>
+          <span>卓球がまったくの初心者でも大丈夫ですか？</span>
+        </div>
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">
+        <div class="faq-a-inner">
+          もちろんです！現在のメンバーの約半数が未経験・初心者からスタートしています。ラケットの持ち方から丁寧に教えますので、安心してご参加ください。まずは無料体験からどうぞ。
+        </div>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div class="faq-q-text">
+          <span class="q-badge">Q</span>
+          <span>用具を持っていないのですが、どうすればいいですか？</span>
+        </div>
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">
+        <div class="faq-a-inner">
+          ラケット・ボールは無料でお貸しします。体験参加時は手ぶらでお越しいただいてかまいません。シューズはお持ちのスポーツシューズをお持ちください（内履き推奨）。
+        </div>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div class="faq-q-text">
+          <span class="q-badge">Q</span>
+          <span>毎週参加しないといけませんか？</span>
+        </div>
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">
+        <div class="faq-a-inner">
+          参加は任意です。月会費を払っていれば、参加できる日だけ来ていただければOK。仕事や家庭の都合を優先していただいて問題ありません。無理のない範囲でお楽しみください。
+        </div>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div class="faq-q-text">
+          <span class="q-badge">Q</span>
+          <span>年齢制限はありますか？</span>
+        </div>
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">
+        <div class="faq-a-inner">
+          18歳以上であればどなたでも参加可能です。現在のメンバーは20代〜50代まで幅広く活動しています。年齢を超えた交流も TT Spirits の魅力のひとつです。
+        </div>
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <div class="faq-q-text">
+          <span class="q-badge">Q</span>
+          <span>大会などの試合に出ることは必須ですか？</span>
+        </div>
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">
+        <div class="faq-a-inner">
+          いいえ、完全に任意です。「楽しく体を動かしたいだけ」という方もたくさんいます。大会に挑戦したい方は積極的にサポートしますが、強制はしていません。
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 入会 CTA -->
+<section id="join">
+  <div class="join-wrap">
+    <span class="emoji-big">🏓</span>
+    <h2>まずは無料体験から！</h2>
+    <p>
+      フォームを送信すると、担当メンバーから<br>
+      2営業日以内にご連絡いたします。<br>
+      気軽にご参加ください。
+    </p>
+    <form class="join-form" onsubmit="handleSubmit(event)">
+      <div class="form-row">
+        <input type="text" placeholder="お名前 *" required>
+        <input type="number" placeholder="年齢" min="18" max="99">
+      </div>
+      <input type="email" placeholder="メールアドレス *" required>
+      <select>
+        <option value="" disabled selected>卓球経験を教えてください</option>
+        <option>まったくの初心者</option>
+        <option>少し経験あり（趣味程度）</option>
+        <option>学生時代にやっていた</option>
+        <option>現在も定期的に練習している</option>
+        <option>大会経験あり</option>
+      </select>
+      <select>
+        <option value="" disabled selected>希望の参加日</option>
+        <option>火曜日の夜（19:00〜21:00）</option>
+        <option>土曜日の午前（10:00〜12:30）</option>
+        <option>どちらでも大丈夫</option>
+      </select>
+      <button type="submit" class="submit-btn">✉️ 無料体験を申し込む</button>
+    </form>
+  </div>
+</section>
+
+<!-- フッター -->
+<footer>
+  <div class="footer-logo">🏓 TT Spirits</div>
+  <p class="footer-concept">第三の居場所、真剣に楽しく！</p>
+  <ul class="footer-links">
+    <li><a href="#concept">コンセプト</a></li>
+    <li><a href="#activity">活動案内</a></li>
+    <li><a href="#members">メンバー</a></li>
+    <li><a href="#faq">よくある質問</a></li>
+    <li><a href="#join">無料体験申込</a></li>
+  </ul>
+  <p class="footer-copy">© 2026 TT Spirits. All rights reserved.</p>
+</footer>
+
+<script>
+  // FAQアコーディオン
+  function toggleFaq(el) {
+    const item = el.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  // フォーム送信
+  function handleSubmit(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('.submit-btn');
+    btn.textContent = '✅ 送信完了！ご連絡をお待ちください';
+    btn.style.background = 'linear-gradient(135deg, #27ae60, #1a6b3a)';
+    btn.disabled = true;
+  }
+
+  // スクロールアニメーション
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.concept-card, .member-card, .info-item, .faq-item, .stat-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>

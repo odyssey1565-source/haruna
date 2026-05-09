@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAS 学習 & クイズ</title>
+<style>
+  :root {
+    --primary: #4285f4;
+    --success: #34a853;
+    --danger: #ea4335;
+    --warning: #fbbc04;
+    --bg: #f8f9fa;
+    --card: #ffffff;
+    --text: #202124;
+    --sub: #5f6368;
+    --border: #e8eaed;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', 'Hiragino Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  header {
+    background: var(--primary); color: #fff; padding: 14px 20px;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.2); position: sticky; top: 0; z-index: 100;
+  }
+  header .logo { font-size: 22px; }
+  header h1 { font-size: 18px; font-weight: 700; }
+  header .sub { font-size: 12px; opacity: .8; }
+
+  .container { max-width: 780px; margin: 0 auto; padding: 20px 16px 80px; }
+
+  /* ===== MENU ===== */
+  #screen-menu { animation: fadeIn .3s; }
+  .menu-hero { text-align: center; padding: 24px 0 20px; }
+  .menu-hero .big-icon { font-size: 56px; margin-bottom: 10px; }
+  .menu-hero h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .menu-hero p { color: var(--sub); font-size: 14px; }
+
+  .flow-bar {
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px; margin: 16px 0 24px; flex-wrap: wrap;
+  }
+  .flow-chip {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .flow-arrow { color: var(--sub); font-size: 16px; }
+
+  .level-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+  .level-card {
+    background: var(--card); border-radius: 14px; padding: 20px 16px;
+    text-align: center; cursor: pointer; border: 2px solid var(--border);
+    transition: transform .15s, box-shadow .15s, border-color .15s;
+  }
+  .level-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,.1); border-color: var(--primary); }
+  .level-card .lv-icon { font-size: 36px; margin-bottom: 8px; }
+  .level-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .level-card .lv-desc { font-size: 12px; color: var(--sub); margin-bottom: 10px; line-height: 1.5; }
+  .lv-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .lv-1 .lv-badge { background: #e8f5e9; color: #2e7d32; }
+  .lv-2 .lv-badge { background: #fff3e0; color: #e65100; }
+  .lv-3 .lv-badge { background: #fce4ec; color: #c62828; }
+  .lv-4 .lv-badge { background: #ede7f6; color: #4527a0; }
+  .lv-prog { font-size: 11px; color: var(--sub); margin-top: 8px; }
+  .mini-bar { height: 4px; background: var(--border); border-radius: 2px; margin-top: 5px; overflow: hidden; }
+  .mini-bar .fill { height: 100%; background: var(--success); border-radius: 2px; transition: width .4s; }
+
+  /* ===== LESSON LIST ===== */
+  #screen-lessons { animation: fadeIn .3s; }
+  .screen-hd { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .btn-back {
+    background: none; border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 12px; cursor: pointer; font-size: 13px; color: var(--sub);
+    display: flex; align-items: center; gap: 4px;
+  }
+  .btn-back:hover { background: var(--border); }
+  .screen-title { font-size: 20px; font-weight: 700; }
+
+  .lesson-list { display: flex; flex-direction: column; gap: 10px; }
+  .lesson-row {
+    background: var(--card); border-radius: 12px; padding: 16px;
+    display: flex; align-items: center; gap: 14px; cursor: pointer;
+    border: 2px solid var(--border); transition: border-color .15s, box-shadow .15s;
+    position: relative;
+  }
+  .lesson-row:hover { border-color: var(--primary); box-shadow: 0 2px 12px rgba(66,133,244,.15); }
+  .lesson-row.done { border-color: var(--success); }
+  .lesson-row.locked { opacity: .5; cursor: not-allowed; }
+  .lesson-row.locked:hover { border-color: var(--border); box-shadow: none; }
+  .lesson-num {
+    width: 38px; height: 38px; border-radius: 50%; background: #e8f0fe;
+    color: var(--primary); font-weight: 700; font-size: 15px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .lesson-row.done .lesson-num { background: var(--success); color: #fff; }
+  .lesson-row.locked .lesson-num { background: var(--border); color: var(--sub); }
+  .lesson-info { flex: 1; }
+  .lesson-info .li-title { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+  .lesson-info .li-meta { font-size: 12px; color: var(--sub); display: flex; align-items: center; gap: 8px; }
+  .li-tag { background: #e8f0fe; color: var(--primary); padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .li-quiz-badge { background: #e8f5e9; color: var(--success); padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .li-quiz-badge.pending { background: #fff3e0; color: #e65100; }
+  .lesson-arrow { color: var(--sub); font-size: 18px; }
+
+  /* ===== LESSON ===== */
+  #screen-lesson { animation: fadeIn .3s; }
+  .lesson-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .lesson-prog { font-size: 13px; color: var(--sub); }
+
+  .lesson-card {
+    background: var(--card); border-radius: 16px; padding: 26px 22px;
+    border: 1px solid var(--border); margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  }
+  .lesson-tag-top { display: inline-block; background: #e8f0fe; color: var(--primary); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px; }
+  .lesson-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+
+  .content-block { margin-bottom: 18px; }
+  .content-block h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .content-block p { font-size: 14px; line-height: 1.8; }
+  .content-block p + p { margin-top: 8px; }
+  .content-block ul { padding-left: 20px; }
+  .content-block li { font-size: 14px; line-height: 1.8; margin-bottom: 3px; }
+  code { background: #f1f3f4; padding: 2px 6px; border-radius: 4px; font-family: 'Fira Code','Consolas',monospace; font-size: 13px; color: #c62828; }
+  .code-block {
+    background: #282c34; color: #abb2bf; border-radius: 12px;
+    padding: 16px; font-family: 'Fira Code','Consolas',monospace;
+    font-size: 13px; line-height: 1.8; margin: 10px 0; overflow-x: auto; white-space: pre;
+  }
+  .code-block .kw  { color: #c678dd; }
+  .code-block .fn  { color: #61afef; }
+  .code-block .str { color: #98c379; }
+  .code-block .num { color: #d19a66; }
+  .code-block .cm  { color: #7d8799; font-style: italic; }
+  .code-block .cls { color: #e5c07b; }
+  .tip-box { background: #fff8e1; border-left: 4px solid var(--warning); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0; }
+  .tip-box .tip-title { font-size: 13px; font-weight: 700; color: #f57f17; margin-bottom: 5px; }
+  .tip-box p { font-size: 13px; line-height: 1.7; color: #5d4037; }
+  .info-box { background: #e8f4fd; border-left: 4px solid var(--primary); border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 12px 0; }
+  .info-box .info-title { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
+  .info-box p { font-size: 13px; line-height: 1.7; color: #1565c0; }
+
+  .btn-to-quiz {
+    width: 100%; padding: 16px; background: var(--primary); color: #fff;
+    border: none; border-radius: 14px; font-size: 16px; font-weight: 700;
+    cursor: pointer; font-family: inherit; transition: background .15s, transform .1s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-to-quiz:hover { background: #1a73e8; transform: translateY(-1px); }
+
+  /* ===== QUIZ ===== */
+  #screen-quiz { animation: fadeIn .3s; }
+  .quiz-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .quiz-meta { text-align: right; }
+  .quiz-meta .qm-lesson { font-size: 12px; color: var(--sub); }
+  .quiz-meta .qm-count { font-size: 15px; font-weight: 700; }
+
+  .prog-wrap { margin-bottom: 18px; }
+  .prog-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--primary); border-radius: 3px; transition: width .4s; }
+  .prog-txt { font-size: 12px; color: var(--sub); margin-top: 4px; }
+
+  .q-card {
+    background: var(--card); border-radius: 14px; padding: 22px;
+    margin-bottom: 14px; border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  }
+  .q-cat { display: inline-block; background: #e8f0fe; color: var(--primary); font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
+  .q-text { font-size: 16px; font-weight: 600; line-height: 1.6; margin-bottom: 14px; }
+  .q-code { background: #282c34; color: #abb2bf; border-radius: 10px; padding: 14px; font-family: 'Fira Code','Consolas',monospace; font-size: 13px; line-height: 1.7; margin-bottom: 14px; overflow-x: auto; white-space: pre; }
+  .q-code .kw{color:#c678dd;} .q-code .fn{color:#61afef;} .q-code .str{color:#98c379;} .q-code .num{color:#d19a66;} .q-code .cm{color:#7d8799;font-style:italic;} .q-code .cls{color:#e5c07b;}
+
+  .choices { display: flex; flex-direction: column; gap: 9px; }
+  .choice-btn {
+    background: var(--bg); border: 2px solid var(--border); border-radius: 11px;
+    padding: 13px 16px; text-align: left; cursor: pointer; font-size: 14px;
+    font-family: inherit; color: var(--text);
+    transition: border-color .15s, background .15s, transform .1s;
+    display: flex; align-items: flex-start; gap: 10px; line-height: 1.5;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--primary); background: #e8f0fe; transform: translateX(3px); }
+  .clabel { width: 22px; height: 22px; min-width: 22px; border-radius: 50%; background: var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-top: 1px; }
+  .choice-btn.correct { border-color: var(--success); background: #e8f5e9; }
+  .choice-btn.correct .clabel { background: var(--success); color: #fff; }
+  .choice-btn.wrong { border-color: var(--danger); background: #fce8e6; }
+  .choice-btn.wrong .clabel { background: var(--danger); color: #fff; }
+  .choice-btn:disabled { cursor: default; }
+
+  .exp-box {
+    background: var(--card); border-radius: 12px; padding: 16px;
+    margin-bottom: 14px; border-left: 4px solid var(--primary);
+    display: none; animation: fadeIn .3s;
+  }
+  .exp-box.show { display: block; }
+  .exp-ttl { font-size: 13px; font-weight: 700; color: var(--primary); margin-bottom: 7px; }
+  .exp-body { font-size: 14px; line-height: 1.7; }
+  .exp-res { margin-top: 10px; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 600; }
+  .exp-res.ok { background: #e8f5e9; color: #2e7d32; }
+  .exp-res.ng { background: #fce8e6; color: #c62828; }
+
+  .btn-next-q {
+    width: 100%; padding: 14px; background: var(--primary); color: #fff;
+    border: none; border-radius: 12px; font-size: 15px; font-weight: 700;
+    cursor: pointer; display: none; font-family: inherit; transition: background .15s;
+  }
+  .btn-next-q:hover { background: #1a73e8; }
+  .btn-next-q.show { display: block; }
+
+  /* ===== LESSON RESULT ===== */
+  #screen-lresult { animation: fadeIn .3s; }
+  .lresult-card {
+    background: var(--card); border-radius: 20px; padding: 36px 24px;
+    text-align: center; border: 1px solid var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,.08); margin-bottom: 16px;
+  }
+  .lr-icon { font-size: 60px; margin-bottom: 12px; }
+  .lr-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .lr-sub { color: var(--sub); font-size: 14px; margin-bottom: 20px; }
+  .score-ring {
+    width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border: 8px solid var(--primary); background: #e8f0fe;
+  }
+  .score-ring .sr-num { font-size: 34px; font-weight: 900; color: var(--primary); }
+  .score-ring .sr-tot { font-size: 13px; color: var(--sub); }
+  .lr-comment { background: var(--bg); border-radius: 12px; padding: 14px; font-size: 14px; line-height: 1.7; color: var(--sub); margin-bottom: 20px; text-align: left; }
+  .lr-actions { display: flex; flex-direction: column; gap: 10px; }
+  .btn-primary { padding: 14px; background: var(--primary); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .btn-primary:hover { background: #1a73e8; }
+  .btn-secondary { padding: 13px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .btn-secondary:hover { background: var(--border); }
+
+  .review-wrap { margin-top: 16px; }
+  .rv-item { background: var(--card); border-radius: 12px; padding: 14px; margin-bottom: 10px; border: 1px solid var(--border); }
+  .rv-q { font-size: 14px; font-weight: 600; margin-bottom: 7px; }
+  .rv-ans { font-size: 13px; padding: 5px 10px; border-radius: 7px; margin-bottom: 3px; }
+  .rv-ok { background: #e8f5e9; color: #2e7d32; }
+  .rv-ng { background: #fce8e6; color: #c62828; }
+  .rv-exp { font-size: 13px; color: var(--sub); margin-top: 7px; line-height: 1.6; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  .hidden { display: none !important; }
+  @media (max-width: 480px) {
+    .level-grid { grid-template-columns: 1fr 1fr; }
+    .lesson-card { padding: 18px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⚡</div>
+  <div>
+    <h1>GAS 学習 &amp; クイズ</h1>
+    <div class="sub">Google Apps Script をスモールステップで習得</div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- メニュー -->
+  <div id="screen-menu">
+    <div class="menu-hero">
+      <div class="big-icon">📚</div>
+      <h2>1レッスン → 1クイズ で着実に習得</h2>
+      <p>解説を読んだらすぐにクイズで確認！</p>
+    </div>
+    <div class="flow-bar">
+      <div class="flow-chip">📖 レッスンを読む</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-chip">✍️ その場でクイズ</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-chip">✅ 理解して次へ</div>
+    </div>
+    <div class="level-grid">
+      <div class="level-card lv-1" onclick="openLevel(0)">
+        <div class="lv-icon">🌱</div><h3>Level 1</h3>
+        <div class="lv-desc">GASの基本<br>変数・関数・ループ</div>
+        <span class="lv-badge">入門</span>
+        <div class="lv-prog" id="lp0"></div>
+        <div class="mini-bar"><div class="fill" id="lf0" style="width:0%"></div></div>
+      </div>
+      <div class="level-card lv-2" onclick="openLevel(1)">
+        <div class="lv-icon">📊</div><h3>Level 2</h3>
+        <div class="lv-desc">スプレッドシート<br>操作の基本</div>
+        <span class="lv-badge">初級</span>
+        <div class="lv-prog" id="lp1"></div>
+        <div class="mini-bar"><div class="fill" id="lf1" style="width:0%"></div></div>
+      </div>
+      <div class="level-card lv-3" onclick="openLevel(2)">
+        <div class="lv-icon">📧</div><h3>Level 3</h3>
+        <div class="lv-desc">Gmail・Drive<br>外部連携</div>
+        <span class="lv-badge">中級</span>
+        <div class="lv-prog" id="lp2"></div>
+        <div class="mini-bar"><div class="fill" id="lf2" style="width:0%"></div></div>
+      </div>
+      <div class="level-card lv-4" onclick="openLevel(3)">
+        <div class="lv-icon">⏱️</div><h3>Level 4</h3>
+        <div class="lv-desc">トリガー・Webアプリ<br>応用テクニック</div>
+        <span class="lv-badge">上級</span>
+        <div class="lv-prog" id="lp3"></div>
+        <div class="mini-bar"><div class="fill" id="lf3" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- レッスン一覧 -->
+  <div id="screen-lessons" class="hidden">
+    <div class="screen-hd">
+      <button class="btn-back" onclick="goMenu()">← 戻る</button>
+      <div class="screen-title" id="lessons-title"></div>
+    </div>
+    <div class="lesson-list" id="lesson-list"></div>
+  </div>
+
+  <!-- レッスン本文 -->
+  <div id="screen-lesson" class="hidden">
+    <div class="lesson-hd">
+      <button class="btn-back" onclick="goLessons()">← 一覧へ</button>
+      <div class="lesson-prog" id="lesson-prog"></div>
+    </div>
+    <div id="lesson-content"></div>
+    <button class="btn-to-quiz" onclick="startLessonQuiz()">✍️ クイズに挑戦！</button>
+  </div>
+
+  <!-- クイズ -->
+  <div id="screen-quiz" class="hidden">
+    <div class="quiz-hd">
+      <button class="btn-back" onclick="backToLesson()">← 解説に戻る</button>
+      <div class="quiz-meta">
+        <div class="qm-lesson" id="qm-lesson"></div>
+        <div class="qm-count" id="qm-count"></div>
+      </div>
+    </div>
+    <div class="prog-wrap">
+      <div class="prog-bar"><div class="prog-fill" id="prog-fill-q"></div></div>
+      <div class="prog-txt" id="prog-txt-q"></div>
+    </div>
+    <div class="q-card">
+      <div class="q-cat" id="q-cat"></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="q-code hidden" id="q-code"></div>
+      <div class="choices" id="choices"></div>
+    </div>
+    <div class="exp-box" id="exp-box">
+      <div class="exp-ttl">💡 解説</div>
+      <div class="exp-body" id="exp-body"></div>
+      <div class="exp-res" id="exp-res"></div>
+    </div>
+    <button class="btn-next-q" id="btn-next-q" onclick="nextQ()">次の問題へ →</button>
+  </div>
+
+  <!-- レッスン結果 -->
+  <div id="screen-lresult" class="hidden">
+    <div class="lresult-card">
+      <div class="lr-icon" id="lr-icon"></div>
+      <div class="lr-title" id="lr-title"></div>
+      <div class="lr-sub" id="lr-sub"></div>
+      <div class="score-ring">
+        <div class="sr-num" id="sr-num"></div>
+        <div class="sr-tot" id="sr-tot"></div>
+      </div>
+      <div class="lr-comment" id="lr-comment"></div>
+      <div class="lr-actions">
+        <button class="btn-primary" id="btn-next-lesson" onclick="goNextLesson()"></button>
+        <button class="btn-secondary" onclick="retryQuiz()">🔄 このクイズをやり直す</button>
+        <button class="btn-secondary" onclick="showReview()">📖 解答を見直す</button>
+        <button class="btn-secondary" onclick="backToLesson()">📖 解説を読み直す</button>
+        <button class="btn-secondary" onclick="goLessons()">📋 一覧へ戻る</button>
+      </div>
+    </div>
+    <div class="review-wrap hidden" id="review-wrap"></div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// データ: レッスン + 直結クイズ（各2〜3問）
+// ============================================================
+const LEVELS = [
+  { name: 'Level 1 — GASの基本', short: 'Lv.1' },
+  { name: 'Level 2 — スプレッドシート', short: 'Lv.2' },
+  { name: 'Level 3 — Gmail・Drive連携', short: 'Lv.3' },
+  { name: 'Level 4 — トリガー・応用', short: 'Lv.4' },
+];
+
+const LESSONS = [
+ /* ── Level 1 ── */
+ [
+  {
+   tag:'GAS概要', title:'GASとは何か？',
+   content:`
+    <div class="content-block"><h3>🔍 GASとは？</h3>
+    <p>Google Apps Script（GAS）は、Googleが提供する<strong>クラウドベースのスクリプト実行環境</strong>です。</p>
+    <p><strong>JavaScript</strong> をベースにした言語で、スプレッドシート・Gmail・Drive などを自動化できます。</p></div>
+    <div class="info-box"><div class="info-title">💡 GASのメリット</div>
+    <p>・環境構築不要。ブラウザだけで書ける<br>・Googleサービスと簡単に連携<br>・トリガーで自動実行できる<br>・無料で使える</p></div>
+    <div class="content-block"><h3>📝 最初のGASコード</h3>
+    <p>スプレッドシートを開き「拡張機能 → Apps Script」でエディタを開きます。</p></div>
+    <div class="code-block"><span class="kw">function</span> <span class="fn">myFunction</span>() {
+  <span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">"Hello, GAS!"</span>);
+}</div>
+    <div class="content-block"><p><code>Ctrl+R</code>（Mac: <code>⌘+R</code>）で実行。「表示 → ログ」で確認できます。</p></div>
+    <div class="tip-box"><div class="tip-title">⚠️ 注意点</div><p>GASはサーバー上で動くため、ブラウザAPIは使えません。代わりに <code>Logger.log()</code> でデバッグします。</p></div>`,
+   quiz:[
+    { cat:'GAS概要', text:'GASはどのプログラミング言語をベースにしていますか？',
+      choices:['Python','JavaScript','Ruby','Java'], answer:1,
+      exp:'GASは <code>JavaScript</code> ベースです。Googleのサーバー上で動作し、Googleサービスを自動化できます。' },
+    { cat:'GAS概要', text:'GASのデバッグログを出力するメソッドはどれですか？',
+      choices:['console.print()','Logger.log()','print()','debug.show()'], answer:1,
+      exp:'<code>Logger.log()</code> がGAS標準のログ出力です。「表示 → ログ」または実行ログパネルで確認できます。' },
+    { cat:'GAS概要', text:'GASスクリプトを実行するショートカットキーはどれですか？',
+      choices:['Ctrl+S','Ctrl+Enter','Ctrl+R','F5'], answer:2,
+      exp:'<code>Ctrl+R</code>（Mac: <code>⌘+R</code>）で現在選択中の関数を実行できます。' },
+   ]
+  },
+  {
+   tag:'変数・型', title:'変数とデータ型',
+   content:`
+    <div class="content-block"><h3>📦 変数の宣言</h3></div>
+    <div class="code-block"><span class="kw">let</span>   name = <span class="str">"田中"</span>;    <span class="cm">// 再代入OK</span>
+<span class="kw">const</span> age  = <span class="num">25</span>;        <span class="cm">// 再代入NG（推奨）</span>
+<span class="kw">var</span>   old  = <span class="str">"古い書き方"</span>; <span class="cm">// 非推奨</span></div>
+    <div class="tip-box"><div class="tip-title">💡 ベストプラクティス</div><p>基本は <code>const</code> を使い、再代入が必要なときだけ <code>let</code> を使いましょう。</p></div>
+    <div class="content-block"><h3>🔢 基本のデータ型</h3></div>
+    <div class="code-block"><span class="kw">const</span> str  = <span class="str">"文字列"</span>;        <span class="cm">// String</span>
+<span class="kw">const</span> num  = <span class="num">42</span>;             <span class="cm">// Number</span>
+<span class="kw">const</span> bool = <span class="kw">true</span>;            <span class="cm">// Boolean</span>
+<span class="kw">const</span> arr  = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];      <span class="cm">// Array</span>
+<span class="kw">const</span> obj  = { x: <span class="num">1</span>, y: <span class="num">2</span> }; <span class="cm">// Object</span></div>
+    <div class="content-block"><h3>🔗 文字列の結合</h3></div>
+    <div class="code-block"><span class="kw">const</span> name = <span class="str">"田中"</span>;
+<span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">"こんにちは、"</span> + name + <span class="str">"さん"</span>);
+<span class="cm">// テンプレートリテラル（モダンな書き方）</span>
+<span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">\`こんにちは、\${name}さん\`</span>);</div>`,
+   quiz:[
+    { cat:'変数', text:'再代入できない変数を宣言するキーワードはどれですか？',
+      choices:['let','var','const','fixed'], answer:2,
+      exp:'<code>const</code> は再代入できない定数。<code>let</code> は再代入可能。現代のGASでは基本 <code>const</code> を使います。' },
+    { cat:'変数', text:'"点数: " + 100 の結果は何ですか？',
+      choices:['エラー','100','点数: 100','点数:'], answer:2,
+      exp:'文字列と数値を <code>+</code> で結合すると数値が文字列に変換されて連結されます。結果は <code>"点数: 100"</code>。' },
+   ]
+  },
+  {
+   tag:'条件分岐', title:'if文と条件分岐',
+   content:`
+    <div class="content-block"><h3>🔀 if文の基本</h3></div>
+    <div class="code-block"><span class="kw">const</span> score = <span class="num">75</span>;
+
+<span class="kw">if</span> (score >= <span class="num">90</span>) {
+  <span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">"優"</span>);
+} <span class="kw">else if</span> (score >= <span class="num">70</span>) {
+  <span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">"良"</span>);  <span class="cm">// ← これが出力される</span>
+} <span class="kw">else</span> {
+  <span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">"可"</span>);
+}</div>
+    <div class="content-block"><h3>📐 比較演算子</h3>
+    <ul>
+      <li><code>===</code> 厳密に等しい（型も一致）</li>
+      <li><code>!==</code> 等しくない</li>
+      <li><code>&gt;=</code> 以上　<code>&lt;=</code> 以下</li>
+      <li><code>&amp;&amp;</code> かつ（AND）　<code>||</code> または（OR）</li>
+    </ul></div>
+    <div class="tip-box"><div class="tip-title">⚠️ == と === の違い</div>
+    <p><code>==</code> は型変換あり（<code>"1"==1</code>→true）、<code>===</code> は型変換なし（<code>"1"===1</code>→false）。GASでは <code>===</code> を使いましょう。</p></div>`,
+   quiz:[
+    { cat:'条件分岐', text:'score=75 のとき何が出力されますか？',
+      code:`<span class="kw">if</span> (score >= <span class="num">80</span>) {
+  <span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">"合格"</span>);
+} <span class="kw">else</span> {
+  <span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">"不合格"</span>);
+}`,
+      choices:['合格','不合格','75','エラー'], answer:1,
+      exp:'75 >= 80 は <code>false</code> なので else ブロックが実行され「不合格」が出力されます。' },
+    { cat:'条件分岐', text:'型も含めて厳密に比較する演算子はどれですか？',
+      choices:['==','!=','===','>='], answer:2,
+      exp:'<code>===</code> は値も型も一致したときだけ true。GASでは <code>==</code> より <code>===</code> を使うのが基本です。' },
+   ]
+  },
+  {
+   tag:'ループ', title:'forループと繰り返し処理',
+   content:`
+    <div class="content-block"><h3>🔁 for文の基本</h3></div>
+    <div class="code-block"><span class="cm">// 0から4まで5回繰り返す</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i < <span class="num">5</span>; i++) {
+  <span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">\`\${i}回目\`</span>);
+}</div>
+    <div class="content-block"><h3>📋 配列のループ</h3></div>
+    <div class="code-block"><span class="kw">const</span> fruits = [<span class="str">"apple"</span>, <span class="str">"banana"</span>, <span class="str">"cherry"</span>];
+
+<span class="cm">// for...of（シンプルで読みやすい）</span>
+<span class="kw">for</span> (<span class="kw">const</span> fruit <span class="kw">of</span> fruits) {
+  <span class="cls">Logger</span>.<span class="fn">log</span>(fruit);
+}
+
+<span class="cm">// forEach（コールバック形式）</span>
+fruits.<span class="fn">forEach</span>((fruit, i) => {
+  <span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">\`\${i}: \${fruit}\`</span>);
+});</div>
+    <div class="tip-box"><div class="tip-title">💡 GASでの活用例</div>
+    <p>スプレッドシートの複数行を処理するときにループは必須。GASを書くうえで最重要の構文のひとつです。</p></div>`,
+   quiz:[
+    { cat:'ループ', text:'for(let i=0; i<4; i++) のループは何回実行されますか？',
+      choices:['3回','4回','5回','0回'], answer:1,
+      exp:'i=0,1,2,3 の4回です。<code>i < 4</code> なので i=4 になった瞬間に終了します。' },
+    { cat:'ループ', text:'配列のすべての要素を順に取り出すのに使う構文はどれですか？',
+      choices:['for...in','for...of','while','do...while'], answer:1,
+      exp:'<code>for...of</code> は配列の要素を順に取り出すのに最適な構文です。<code>for...in</code> はオブジェクトのキー列挙用。' },
+   ]
+  },
+  {
+   tag:'関数', title:'関数の定義と使い方',
+   content:`
+    <div class="content-block"><h3>🔧 関数宣言の基本</h3></div>
+    <div class="code-block"><span class="kw">function</span> <span class="fn">greet</span>(name) {
+  <span class="kw">return</span> <span class="str">\`こんにちは、\${name}さん！\`</span>;
+}
+
+<span class="cls">Logger</span>.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="str">"田中"</span>));
+<span class="cm">// → "こんにちは、田中さん！"</span></div>
+    <div class="content-block"><h3>➡️ アロー関数（短く書ける）</h3></div>
+    <div class="code-block"><span class="kw">const</span> <span class="fn">add</span> = (a, b) => a + b;
+<span class="cls">Logger</span>.<span class="fn">log</span>(<span class="fn">add</span>(<span class="num">3</span>, <span class="num">4</span>)); <span class="cm">// → 7</span></div>
+    <div class="info-box"><div class="info-title">📌 GASの実行単位</div>
+    <p>GASはスクリプトエディタから「関数」を実行単位として実行します。関数名は目的がわかる名前にしましょう。</p></div>`,
+   quiz:[
+    { cat:'関数', text:'function add(a,b){return a+b} を add(3,7) で呼ぶと？',
+      choices:['37','3+7','10','エラー'], answer:2,
+      exp:'数値の <code>3 + 7 = 10</code> が返ります。引数が数値なので文字列結合にはなりません。' },
+    { cat:'関数', text:'(a, b) => a + b はどんな記法ですか？',
+      choices:['関数宣言','アロー関数','クラス','コールバック'], answer:1,
+      exp:'<code>=> ...</code> と書く<strong>アロー関数</strong>です。<code>function</code> キーワードを省略して短く書けます。' },
+   ]
+  },
+ ],
+
+ /* ── Level 2 ── */
+ [
+  {
+   tag:'スプレッドシート基本', title:'スプレッドシートの取得',
+   content:`
+    <div class="content-block"><h3>📊 スプレッドシートを取得する</h3></div>
+    <div class="code-block"><span class="cm">// スクリプトが紐づくスプレッドシートを取得</span>
+<span class="kw">const</span> ss = <span class="cls">SpreadsheetApp</span>.<span class="fn">getActiveSpreadsheet</span>();
+
+<span class="cm">// アクティブなシートを取得（よく使う）</span>
+<span class="kw">const</span> sheet = <span class="cls">SpreadsheetApp</span>.<span class="fn">getActiveSheet</span>();
+
+<span class="cm">// シート名で指定して取得</span>
+<span class="kw">const</span> sheet2 = ss.<span class="fn">getSheetByName</span>(<span class="str">"売上データ"</span>);</div>
+    <div class="info-box"><div class="info-title">📌 取得パターンまとめ</div>
+    <p><code>getActiveSpreadsheet()</code> → ファイル全体<br>
+    <code>getActiveSheet()</code> → 現在表示中のシート<br>
+    <code>getSheetByName("名前")</code> → 名前でシート指定</p></div>`,
+   quiz:[
+    { cat:'スプレッドシート', text:'アクティブなスプレッドシートを取得するメソッドは？',
+      choices:['Spreadsheet.get()','SpreadsheetApp.getActiveSpreadsheet()','Sheet.getActive()','SpreadsheetApp.open()'], answer:1,
+      exp:'<code>SpreadsheetApp.getActiveSpreadsheet()</code> でスクリプトに紐づくスプレッドシートを取得します。' },
+    { cat:'スプレッドシート', text:'シート名"売上"でシートを取得するコードは？',
+      choices:['ss.getSheet("売上")','ss.getSheetByName("売上")','ss.findSheet("売上")','ss.sheet("売上")'], answer:1,
+      exp:'<code>getSheetByName("名前")</code> でシート名を指定して取得。存在しないと <code>null</code> が返ります。' },
+   ]
+  },
+  {
+   tag:'セル読み書き', title:'セルの読み書き',
+   content:`
+    <div class="content-block"><h3>✏️ セルへの書き込み</h3></div>
+    <div class="code-block"><span class="kw">const</span> sheet = <span class="cls">SpreadsheetApp</span>.<span class="fn">getActiveSheet</span>();
+
+<span class="cm">// A1セルに値を入力</span>
+sheet.<span class="fn">getRange</span>(<span class="str">"A1"</span>).<span class="fn">setValue</span>(<span class="str">"Hello GAS!"</span>);
+
+<span class="cm">// 行・列番号で指定（1始まり）</span>
+sheet.<span class="fn">getRange</span>(<span class="num">2</span>, <span class="num">1</span>).<span class="fn">setValue</span>(<span class="str">"2行1列目"</span>);</div>
+    <div class="content-block"><h3>📖 セルの読み取り</h3></div>
+    <div class="code-block"><span class="cm">// 1つのセルを読む</span>
+<span class="kw">const</span> val = sheet.<span class="fn">getRange</span>(<span class="str">"A1"</span>).<span class="fn">getValue</span>();
+
+<span class="cm">// 範囲をまとめて読む → 2次元配列で返る</span>
+<span class="kw">const</span> data = sheet.<span class="fn">getRange</span>(<span class="str">"A1:C3"</span>).<span class="fn">getValues</span>();
+<span class="cm">// data[行][列] でアクセス（どちらも0始まり）</span>
+<span class="cls">Logger</span>.<span class="fn">log</span>(data[<span class="num">0</span>][<span class="num">0</span>]); <span class="cm">// A1の値</span></div>
+    <div class="tip-box"><div class="tip-title">💡 getValue vs getValues</div>
+    <p>1セルなら <code>getValue()</code>、複数セルなら <code>getValues()</code>（複数形）。<code>getValues()</code> は2次元配列を返します。</p></div>`,
+   quiz:[
+    { cat:'セル操作', text:'A1セルに値を書き込むメソッドは？',
+      choices:['setText()','setValue()','setContent()','write()'], answer:1,
+      exp:'<code>getRange("A1").setValue("値")</code> で書き込みます。複数セルには <code>setValues(2次元配列)</code> を使います。' },
+    { cat:'セル読み取り', text:'A1:C3 の全データを2次元配列で取得するには？',
+      choices:['getRange("A1:C3").getValue()','getRange("A1:C3").getValues()','getData("A1:C3")','readAll()'], answer:1,
+      exp:'<code>getValues()</code> で範囲全体を2次元配列で返します。単一セルは <code>getValue()</code>（sなし）。' },
+   ]
+  },
+  {
+   tag:'一括操作', title:'一括書き込みと末尾追記',
+   content:`
+    <div class="content-block"><h3>⚡ 一括書き込みで高速化</h3></div>
+    <div class="code-block"><span class="cm">// ❌ NG: ループ内で1行ずつ書く（遅い！）</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">1</span>; i <= <span class="num">100</span>; i++) {
+  sheet.<span class="fn">getRange</span>(i, <span class="num">1</span>).<span class="fn">setValue</span>(i);
+}
+
+<span class="cm">// ✅ OK: 配列にまとめて1回で書く（速い！）</span>
+<span class="kw">const</span> data = Array.<span class="fn">from</span>({length: <span class="num">100</span>}, (_, i) => [i + <span class="num">1</span>]);
+sheet.<span class="fn">getRange</span>(<span class="num">1</span>, <span class="num">1</span>, data.length, <span class="num">1</span>).<span class="fn">setValues</span>(data);</div>
+    <div class="content-block"><h3>📍 末尾への追記</h3></div>
+    <div class="code-block"><span class="cm">// 最終行の次に1行追加（最もシンプル）</span>
+sheet.<span class="fn">appendRow</span>([<span class="str">"田中"</span>, <span class="num">25</span>, <span class="str">"東京"</span>]);
+
+<span class="cm">// 最終行番号を取得</span>
+<span class="kw">const</span> lastRow = sheet.<span class="fn">getLastRow</span>();
+<span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">\`\${lastRow}行あります\`</span>);</div>`,
+   quiz:[
+    { cat:'最終行', text:'データが入っている最終行番号を返すメソッドは？',
+      choices:['getMaxRow()','getLastRow()','getEndRow()','getDataRow()'], answer:1,
+      exp:'<code>getLastRow()</code> でデータが入っている最終行番号を返します。<code>getMaxRow()</code> はシートの最大行数。' },
+    { cat:'データ追加', text:'末尾に1行追加する最もシンプルなメソッドは？',
+      choices:['addRow()','appendRow()','insertRow()','pushRow()'], answer:1,
+      exp:'<code>sheet.appendRow([値1, 値2, ...])</code> で最終行の次に行を追加します。' },
+    { cat:'一括書き込み', text:'2次元配列をまとめて書き込むメソッドは？',
+      choices:['setValue(data)','setValues(data)','writeAll(data)','setData(data)'], answer:1,
+      exp:'<code>setValues(2次元配列)</code> で範囲にまとめて書き込みます。範囲と配列のサイズを揃える必要があります。' },
+   ]
+  },
+  {
+   tag:'フォーマット', title:'セルの書式設定',
+   content:`
+    <div class="content-block"><h3>🎨 セルのスタイルを変える</h3></div>
+    <div class="code-block"><span class="kw">const</span> range = sheet.<span class="fn">getRange</span>(<span class="str">"A1:C1"</span>);
+
+range.<span class="fn">setBackground</span>(<span class="str">"#4285f4"</span>);  <span class="cm">// 背景色</span>
+range.<span class="fn">setFontColor</span>(<span class="str">"#ffffff"</span>);  <span class="cm">// 文字色</span>
+range.<span class="fn">setFontWeight</span>(<span class="str">"bold"</span>);     <span class="cm">// 太字</span>
+range.<span class="fn">setFontSize</span>(<span class="num">14</span>);           <span class="cm">// 文字サイズ</span>
+
+<span class="cm">// メソッドチェーンでまとめて書ける</span>
+range.<span class="fn">setBackground</span>(<span class="str">"#34a853"</span>)
+     .<span class="fn">setFontColor</span>(<span class="str">"white"</span>)
+     .<span class="fn">setFontWeight</span>(<span class="str">"bold"</span>);</div>
+    <div class="info-box"><div class="info-title">📌 色の指定方法</div>
+    <p>HEXコード（<code>#ff0000</code>）または英語の色名（<code>"red"</code>、<code>"yellow"</code>）が使えます。</p></div>`,
+   quiz:[
+    { cat:'フォーマット', text:'セルの背景色を設定するメソッドは？',
+      choices:['setBackground()','setBackgroundColor()','setBgColor()','setColor()'], answer:0,
+      exp:'<code>range.setBackground("yellow")</code> または <code>setBackground("#ffff00")</code> で背景色を設定します。' },
+    { cat:'フォーマット', text:'複数のスタイル設定をつなげて書く記法を何といいますか？',
+      choices:['パイプライン','メソッドチェーン','カスケード','チェーン演算子'], answer:1,
+      exp:'<code>range.setBackground("red").setFontWeight("bold")</code> のようにメソッドを連続して呼ぶ書き方を<strong>メソッドチェーン</strong>といいます。' },
+   ]
+  },
+  {
+   tag:'シート操作', title:'シートの追加・削除・一覧',
+   content:`
+    <div class="content-block"><h3>📋 シートを操作する</h3></div>
+    <div class="code-block"><span class="kw">const</span> ss = <span class="cls">SpreadsheetApp</span>.<span class="fn">getActiveSpreadsheet</span>();
+
+<span class="cm">// シートを追加</span>
+<span class="kw">const</span> newSheet = ss.<span class="fn">insertSheet</span>(<span class="str">"新しいシート"</span>);
+
+<span class="cm">// シートを削除</span>
+<span class="kw">const</span> target = ss.<span class="fn">getSheetByName</span>(<span class="str">"不要なシート"</span>);
+<span class="kw">if</span> (target) ss.<span class="fn">deleteSheet</span>(target);
+
+<span class="cm">// すべてのシート一覧を取得</span>
+<span class="kw">const</span> sheets = ss.<span class="fn">getSheets</span>();
+sheets.<span class="fn">forEach</span>(s => <span class="cls">Logger</span>.<span class="fn">log</span>(s.<span class="fn">getName</span>()));</div>
+    <div class="tip-box"><div class="tip-title">⚠️ 削除前にnullチェック！</div>
+    <p><code>getSheetByName()</code> は存在しないシートに対して <code>null</code> を返します。<code>if (target)</code> で確認してから削除しましょう。</p></div>`,
+   quiz:[
+    { cat:'シート操作', text:'新しいシートを追加するメソッドは？',
+      choices:['addSheet()','insertSheet()','createSheet()','newSheet()'], answer:1,
+      exp:'<code>ss.insertSheet("シート名")</code> で新しいシートを追加します。引数なしでも呼べます。' },
+    { cat:'シート操作', text:'すべてのシートの配列を取得するメソッドは？',
+      choices:['ss.getAllSheets()','ss.getSheets()','ss.listSheets()','ss.sheets()'], answer:1,
+      exp:'<code>ss.getSheets()</code> でシートオブジェクトの配列を取得できます。<code>forEach</code> でループして使います。' },
+   ]
+  },
+ ],
+
+ /* ── Level 3 ── */
+ [
+  {
+   tag:'Gmail送信', title:'GmailでメールをSendする',
+   content:`
+    <div class="content-block"><h3>📧 メールを送信する</h3></div>
+    <div class="code-block"><span class="cm">// シンプルな送信</span>
+<span class="cls">MailApp</span>.<span class="fn">sendEmail</span>(
+  <span class="str">"to@example.com"</span>,
+  <span class="str">"件名"</span>,
+  <span class="str">"本文テキスト"</span>
+);
+
+<span class="cm">// オプション付き（CC・HTML対応）</span>
+<span class="cls">MailApp</span>.<span class="fn">sendEmail</span>({
+  to:       <span class="str">"to@example.com"</span>,
+  subject:  <span class="str">"週次レポート"</span>,
+  body:     <span class="str">"テキスト本文"</span>,
+  htmlBody: <span class="str">"&lt;b&gt;太字&lt;/b&gt;のHTMLメール"</span>,
+  cc:       <span class="str">"cc@example.com"</span>
+});</div>
+    <div class="info-box"><div class="info-title">📌 MailApp vs GmailApp</div>
+    <p><code>MailApp</code>：シンプルな送信専用。どのGoogleアカウントでも動く。<br>
+    <code>GmailApp</code>：検索・ラベル操作など高度な機能が使える。</p></div>`,
+   quiz:[
+    { cat:'Gmail', text:'シンプルにメールを送信するサービスは？',
+      choices:['GmailApp.send()','MailApp.sendEmail()','Email.send()','Google.mail()'], answer:1,
+      exp:'<code>MailApp.sendEmail(to, subject, body)</code> がシンプルな送信方法です。<code>GmailApp</code> はより高度な操作向け。' },
+    { cat:'Gmail', text:'HTMLメールを送るときのオプションキーは？',
+      choices:['body','htmlBody','html','content'], answer:1,
+      exp:'<code>MailApp.sendEmail({..., htmlBody: "<b>太字</b>"})</code> で HTMLメールを送ります。<code>body</code> と両方指定するとフォールバックになります。' },
+   ]
+  },
+  {
+   tag:'Gmail検索', title:'Gmailメールの検索・取得',
+   content:`
+    <div class="content-block"><h3>🔍 メールを検索する</h3></div>
+    <div class="code-block"><span class="cm">// 未読メールを取得</span>
+<span class="kw">const</span> threads = <span class="cls">GmailApp</span>.<span class="fn">search</span>(<span class="str">"is:unread"</span>);
+
+threads.<span class="fn">forEach</span>(thread => {
+  <span class="kw">const</span> messages = thread.<span class="fn">getMessages</span>();
+  messages.<span class="fn">forEach</span>(msg => {
+    <span class="cls">Logger</span>.<span class="fn">log</span>(msg.<span class="fn">getSubject</span>());  <span class="cm">// 件名</span>
+    <span class="cls">Logger</span>.<span class="fn">log</span>(msg.<span class="fn">getFrom</span>());     <span class="cm">// 送信者</span>
+    <span class="cls">Logger</span>.<span class="fn">log</span>(msg.<span class="fn">getBody</span>());     <span class="cm">// 本文</span>
+  });
+});</div>
+    <div class="info-box"><div class="info-title">📌 Gmail検索クエリ例</div>
+    <p><code>"is:unread"</code> 未読<br>
+    <code>"from:boss@example.com"</code> 送信者指定<br>
+    <code>"subject:レポート"</code> 件名に含む<br>
+    <code>"has:attachment"</code> 添付ファイルあり</p></div>`,
+   quiz:[
+    { cat:'Gmail検索', text:'未読メールのスレッドを取得するコードは？',
+      choices:['GmailApp.getUnread()','GmailApp.search("is:unread")','GmailApp.inbox("unread")','GmailApp.find("unread")'], answer:1,
+      exp:'<code>GmailApp.search("クエリ")</code> でGmailの検索クエリを使ってスレッドを取得します。' },
+    { cat:'Gmail検索', text:'メールの件名を取得するメソッドは？',
+      choices:['msg.getTitle()','msg.getSubject()','msg.getName()','msg.subject'], answer:1,
+      exp:'<code>msg.getSubject()</code> で件名を取得します。<code>getFrom()</code>で送信者、<code>getBody()</code>で本文を取得できます。' },
+   ]
+  },
+  {
+   tag:'Drive', title:'Google Drive でファイル操作',
+   content:`
+    <div class="content-block"><h3>📁 フォルダ・ファイルを操作する</h3></div>
+    <div class="code-block"><span class="cm">// フォルダを作成</span>
+<span class="kw">const</span> folder = <span class="cls">DriveApp</span>.<span class="fn">createFolder</span>(<span class="str">"GASテスト"</span>);
+
+<span class="cm">// ルートのファイルを一覧表示</span>
+<span class="kw">const</span> files = <span class="cls">DriveApp</span>.<span class="fn">getRootFolder</span>().<span class="fn">getFiles</span>();
+<span class="kw">while</span> (files.<span class="fn">hasNext</span>()) {
+  <span class="kw">const</span> file = files.<span class="fn">next</span>();
+  <span class="cls">Logger</span>.<span class="fn">log</span>(file.<span class="fn">getName</span>());
+}
+
+<span class="cm">// IDでファイルを直接取得</span>
+<span class="kw">const</span> file = <span class="cls">DriveApp</span>.<span class="fn">getFileById</span>(<span class="str">"ファイルID"</span>);</div>
+    <div class="tip-box"><div class="tip-title">💡 イテレータとは？</div>
+    <p>DriveAppのファイル一覧は配列ではなく<strong>イテレータ</strong>です。<code>hasNext()</code> で次があるか確認、<code>next()</code> で取得するパターンを使います。</p></div>`,
+   quiz:[
+    { cat:'Drive', text:'Google Driveにフォルダを作成するコードは？',
+      choices:['DriveApp.createFolder("名前")','DriveApp.newFolder("名前")','DriveApp.addFolder("名前")','DriveApp.mkdir("名前")'], answer:0,
+      exp:'<code>DriveApp.createFolder("フォルダ名")</code> でルートにフォルダを作成します。' },
+    { cat:'Drive', text:'Driveのファイルイテレータをループするパターンは？',
+      choices:['for(file of files)','while(files.hasNext()){files.next()}','files.forEach(f=>{})','for(let i=0;i<files.length;i++)'], answer:1,
+      exp:'DriveAppのイテレータは配列ではないため <code>while(hasNext())</code> と <code>next()</code> でループします。' },
+   ]
+  },
+  {
+   tag:'外部API', title:'UrlFetchApp で外部APIを叩く',
+   content:`
+    <div class="content-block"><h3>🌐 外部APIにリクエストする</h3></div>
+    <div class="code-block"><span class="cm">// GETリクエスト</span>
+<span class="kw">const</span> url = <span class="str">"https://api.example.com/data"</span>;
+<span class="kw">const</span> response = <span class="cls">UrlFetchApp</span>.<span class="fn">fetch</span>(url);
+<span class="kw">const</span> json = <span class="cls">JSON</span>.<span class="fn">parse</span>(response.<span class="fn">getContentText</span>());
+<span class="cls">Logger</span>.<span class="fn">log</span>(json);
+
+<span class="cm">// POSTリクエスト（Slack通知など）</span>
+<span class="kw">const</span> payload = { text: <span class="str">"GASから通知！"</span> };
+<span class="cls">UrlFetchApp</span>.<span class="fn">fetch</span>(webhookUrl, {
+  method: <span class="str">"post"</span>,
+  contentType: <span class="str">"application/json"</span>,
+  payload: <span class="cls">JSON</span>.<span class="fn">stringify</span>(payload)
+});</div>
+    <div class="info-box"><div class="info-title">📌 よく使う連携先</div>
+    <p>Slack Webhook / LINE Notify / ChatGPT API / 天気API など、HTTPを使えるサービスならどこでも連携できます！</p></div>`,
+   quiz:[
+    { cat:'外部API', text:'外部APIにHTTPリクエストを送るサービスは？',
+      choices:['HttpApp.fetch()','UrlFetchApp.fetch()','FetchApp.get()','WebApp.fetch()'], answer:1,
+      exp:'<code>UrlFetchApp.fetch(url, options)</code> で外部APIにリクエストを送ります。' },
+    { cat:'外部API', text:'APIレスポンスのJSONをパースする正しい方法は？',
+      choices:['response.json()','JSON.parse(response.getContentText())','response.getJSON()','JSON.load(response)'], answer:1,
+      exp:'<code>getContentText()</code> でテキスト取得後、<code>JSON.parse()</code> でオブジェクトに変換します。' },
+   ]
+  },
+  {
+   tag:'秘密情報管理', title:'APIキーを安全に管理する',
+   content:`
+    <div class="content-block"><h3>🔐 PropertiesService とは？</h3>
+    <p>APIキーやパスワードをコードに直接書くのは<strong>絶対NG</strong>です。<code>PropertiesService</code> を使って安全に保存しましょう。</p></div>
+    <div class="code-block"><span class="cm">// Step1: プロパティを保存（1回だけ実行）</span>
+<span class="kw">function</span> <span class="fn">saveKey</span>() {
+  <span class="cls">PropertiesService</span>.<span class="fn">getScriptProperties</span>()
+    .<span class="fn">setProperty</span>(<span class="str">"API_KEY"</span>, <span class="str">"your-secret-key"</span>);
+}
+
+<span class="cm">// Step2: プロパティを読み込む</span>
+<span class="kw">function</span> <span class="fn">useKey</span>() {
+  <span class="kw">const</span> key = <span class="cls">PropertiesService</span>
+    .<span class="fn">getScriptProperties</span>()
+    .<span class="fn">getProperty</span>(<span class="str">"API_KEY"</span>);
+  <span class="cm">// key を使ってAPI呼び出し…</span>
+}</div>
+    <div class="tip-box"><div class="tip-title">⚠️ コードに直書きNG！</div>
+    <p>APIキーをソースコードに書くと、スクリプトを共有・公開したときに漏洩します。必ず <code>PropertiesService</code> を使いましょう。</p></div>`,
+   quiz:[
+    { cat:'秘密情報', text:'APIキーを安全に保存するサービスは？',
+      choices:['StorageService','SecretService','PropertiesService','KeyService'], answer:2,
+      exp:'<code>PropertiesService.getScriptProperties().setProperty("KEY","value")</code> で安全に保存。コードに直書きしないことが大切です。' },
+    { cat:'秘密情報', text:'保存したプロパティを読み込むメソッドは？',
+      choices:['getProperties("KEY")','getProperty("KEY")','readProperty("KEY")','loadProperty("KEY")'], answer:1,
+      exp:'<code>PropertiesService.getScriptProperties().getProperty("KEY")</code> で値を取得します。' },
+   ]
+  },
+ ],
+
+ /* ── Level 4 ── */
+ [
+  {
+   tag:'時間トリガー', title:'時間ベーストリガー',
+   content:`
+    <div class="content-block"><h3>⏰ トリガーとは？</h3>
+    <p>GASは「トリガー」を使って、指定した時間や特定のイベントに自動実行できます。</p></div>
+    <div class="code-block"><span class="cm">// 毎日午前9時に実行するトリガーを作成</span>
+<span class="kw">function</span> <span class="fn">createTrigger</span>() {
+  <span class="cls">ScriptApp</span>.<span class="fn">newTrigger</span>(<span class="str">"myDailyFunc"</span>)
+    .<span class="fn">timeBased</span>()
+    .<span class="fn">everyDays</span>(<span class="num">1</span>)
+    .<span class="fn">atHour</span>(<span class="num">9</span>)
+    .<span class="fn">create</span>();
+}
+
+<span class="cm">// 毎時間実行</span>
+<span class="cls">ScriptApp</span>.<span class="fn">newTrigger</span>(<span class="str">"myHourlyFunc"</span>)
+  .<span class="fn">timeBased</span>()
+  .<span class="fn">everyHours</span>(<span class="num">1</span>)
+  .<span class="fn">create</span>();</div>
+    <div class="tip-box"><div class="tip-title">💡 GUIでも設定できる</div>
+    <p>スクリプトエディタの「トリガー（時計アイコン）」からGUIでトリガーを設定することもできます。コード不要で簡単です。</p></div>`,
+   quiz:[
+    { cat:'トリガー', text:'毎日午前9時に実行するトリガー作成の書き方は？',
+      choices:['ScriptApp.newTrigger("f").timeBased().everyDays(1).atHour(9).create()','ScriptApp.setTrigger("f","daily",9)','Trigger.daily("f",9)','ScriptApp.addDailyTrigger("f",9)'], answer:0,
+      exp:'<code>ScriptApp.newTrigger().timeBased().everyDays(1).atHour(9).create()</code> がトリガー作成の正しい書き方です。' },
+    { cat:'トリガー', text:'GASの1回の実行時間の上限は（無料アカウント）？',
+      choices:['1分','6分','30分','60分'], answer:1,
+      exp:'無料アカウントは最大<strong>6分</strong>。Google Workspaceは30分。長い処理は分割が必要です。' },
+   ]
+  },
+  {
+   tag:'単純トリガー', title:'単純トリガー（onEdit・onOpen）',
+   content:`
+    <div class="content-block"><h3>🔧 単純トリガー（予約関数名）</h3>
+    <p>特定の関数名にするだけで自動的に実行されます。設定不要！</p></div>
+    <div class="code-block"><span class="cm">// スプレッドシートを開いたときに実行</span>
+<span class="kw">function</span> <span class="fn">onOpen</span>() {
+  <span class="cls">SpreadsheetApp</span>.<span class="fn">getUi</span>().<span class="fn">alert</span>(<span class="str">"ようこそ！"</span>);
+}
+
+<span class="cm">// セルを編集したときに実行</span>
+<span class="kw">function</span> <span class="fn">onEdit</span>(e) {
+  <span class="kw">const</span> range = e.range;    <span class="cm">// 編集されたセル</span>
+  <span class="kw">const</span> value = e.value;    <span class="cm">// 入力された値</span>
+  <span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">\`\${range.<span class="fn">getA1Notation</span>()} に \${value}\`</span>);
+}</div>
+    <div class="info-box"><div class="info-title">📌 単純トリガーの制限</div>
+    <p>メール送信・ドキュメント作成などはできません。それらは <code>ScriptApp.newTrigger()</code> の「インストール可能なトリガー」を使います。</p></div>`,
+   quiz:[
+    { cat:'単純トリガー', text:'セル編集時に自動実行される関数名は？',
+      choices:['onEdit()','onChange()','onUpdate()','onCell()'], answer:0,
+      exp:'<code>function onEdit(e){}</code> という名前の関数はセル編集時に自動実行されます。引数 <code>e</code> に編集情報が入ります。' },
+    { cat:'単純トリガー', text:'スプレッドシートを開いたときに実行される関数名は？',
+      choices:['onLoad()','onStart()','onOpen()','onReady()'], answer:2,
+      exp:'<code>function onOpen(){}</code> という名前の関数はスプレッドシートを開いたときに自動実行されます。' },
+   ]
+  },
+  {
+   tag:'Webアプリ', title:'GASをWebアプリとして公開',
+   content:`
+    <div class="content-block"><h3>🌐 Webアプリとして公開する</h3></div>
+    <div class="code-block"><span class="cm">// GETリクエストを受け取る</span>
+<span class="kw">function</span> <span class="fn">doGet</span>(e) {
+  <span class="kw">return</span> <span class="cls">HtmlService</span>
+    .<span class="fn">createHtmlOutputFromFile</span>(<span class="str">"index"</span>);
+}
+
+<span class="cm">// JSONを返すAPI</span>
+<span class="kw">function</span> <span class="fn">doGet</span>(e) {
+  <span class="kw">const</span> data = { message: <span class="str">"Hello from GAS!"</span> };
+  <span class="kw">return</span> <span class="cls">ContentService</span>
+    .<span class="fn">createTextOutput</span>(<span class="cls">JSON</span>.<span class="fn">stringify</span>(data))
+    .<span class="fn">setMimeType</span>(<span class="cls">ContentService</span>.MimeType.JSON);
+}
+
+<span class="cm">// POSTを受け取る（Webhook用途など）</span>
+<span class="kw">function</span> <span class="fn">doPost</span>(e) {
+  <span class="kw">const</span> body = <span class="cls">JSON</span>.<span class="fn">parse</span>(e.postData.contents);
+}</div>
+    <div class="tip-box"><div class="tip-title">💡 公開手順</div>
+    <p>「デプロイ → 新しいデプロイ → Webアプリ」から公開。「アクセスできるユーザー: 全員」にするとURLだけでアクセス可能。</p></div>`,
+   quiz:[
+    { cat:'Webアプリ', text:'GETリクエストを受け取るエントリポイント関数名は？',
+      choices:['onGet(e)','doGet(e)','handleGet(e)','getRequest(e)'], answer:1,
+      exp:'<code>function doGet(e){}</code> がGETリクエストのエントリポイントです。POSTは <code>doPost(e)</code>。' },
+    { cat:'Webアプリ', text:'GASでHTMLページを返すサービスは？',
+      choices:['ContentService','HtmlService','WebService','PageService'], answer:1,
+      exp:'<code>HtmlService.createHtmlOutputFromFile("index")</code> でHTMLファイルをWebページとして返します。' },
+   ]
+  },
+  {
+   tag:'エラー処理', title:'try-catch とエラー通知',
+   content:`
+    <div class="content-block"><h3>🛡️ エラー処理の基本</h3></div>
+    <div class="code-block"><span class="kw">function</span> <span class="fn">safeRun</span>() {
+  <span class="kw">try</span> {
+    <span class="cm">// エラーが起きるかもしれない処理</span>
+    riskyOperation();
+  } <span class="kw">catch</span> (e) {
+    <span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">"エラー: "</span> + e.message);
+    <span class="cm">// メールで通知する実践パターン</span>
+    <span class="cls">MailApp</span>.<span class="fn">sendEmail</span>(
+      <span class="str">"admin@example.com"</span>,
+      <span class="str">"GASエラー通知"</span>,
+      e.message
+    );
+  } <span class="kw">finally</span> {
+    <span class="cm">// 成功・失敗にかかわらず実行</span>
+    <span class="cls">Logger</span>.<span class="fn">log</span>(<span class="str">"処理終了"</span>);
+  }
+}</div>
+    <div class="info-box"><div class="info-title">📌 トリガーでの必須パターン</div>
+    <p>自動実行スクリプトには必ず <code>try-catch</code> を入れ、エラー時にメール通知するパターンが実践では必須です。</p></div>`,
+   quiz:[
+    { cat:'エラー処理', text:'エラーをキャッチして処理を継続するための構文は？',
+      choices:['if/else','try{}catch(e){}','error{}catch{}','except{}'], answer:1,
+      exp:'<code>try { } catch(e) { }</code> でエラーをキャッチして処理を継続できます。<code>finally</code> は成否を問わず実行されます。' },
+    { cat:'エラー処理', text:'finally ブロックはいつ実行されますか？',
+      choices:['エラーが発生したときだけ','正常終了したときだけ','成功・失敗にかかわらず必ず','catchブロックの後だけ'], answer:2,
+      exp:'<code>finally</code> は <code>try</code> が成功しても失敗しても<strong>必ず</strong>実行されます。後片付け処理に使います。' },
+   ]
+  },
+  {
+   tag:'最適化', title:'GASを速くするテクニック',
+   content:`
+    <div class="content-block"><h3>⚡ GASの実行制限</h3>
+    <ul>
+      <li>1回の実行時間: <strong>最大6分</strong>（Workspaceは30分）</li>
+      <li>1日のトリガー実行: <strong>最大6時間</strong></li>
+      <li>メール送信: <strong>1日100通</strong>（無料）</li>
+    </ul></div>
+    <div class="content-block"><h3>🚀 高速化の3原則</h3></div>
+    <div class="code-block"><span class="cm">// 1. まとめて読む（APIコール1回）</span>
+<span class="kw">const</span> data = sheet.<span class="fn">getDataRange</span>().<span class="fn">getValues</span>();
+
+<span class="cm">// 2. 処理後にまとめて書く（APIコール1回）</span>
+<span class="kw">const</span> result = data.<span class="fn">map</span>(row => [row[<span class="num">0</span>] * <span class="num">2</span>]);
+sheet.<span class="fn">getRange</span>(<span class="num">1</span>, <span class="num">2</span>, result.length, <span class="num">1</span>).<span class="fn">setValues</span>(result);
+
+<span class="cm">// 3. CacheServiceで同じAPIを何度も叩かない</span>
+<span class="kw">const</span> cache = <span class="cls">CacheService</span>.<span class="fn">getScriptCache</span>();
+<span class="kw">let</span> val = cache.<span class="fn">get</span>(<span class="str">"key"</span>);
+<span class="kw">if</span> (!val) {
+  val = expensiveApiCall();
+  cache.<span class="fn">put</span>(<span class="str">"key"</span>, val, <span class="num">3600</span>); <span class="cm">// 1時間キャッシュ</span>
+}</div>`,
+   quiz:[
+    { cat:'最適化', text:'スプレッドシート操作を高速化する最大のポイントは？',
+      choices:['Utilitiesを使う','ループ内でsetValue()を繰り返す','データをまとめてsetValues()で1回書く','SpreadsheetApp.flush()を毎行呼ぶ'], answer:2,
+      exp:'APIコール（getValues/setValues）を最小限にすることが最大の高速化ポイント。まとめて読んで、まとめて書くが鉄則。' },
+    { cat:'最適化', text:'データを一時的にキャッシュするサービスは？',
+      choices:['StorageService','CacheService','TempService','BufferService'], answer:1,
+      exp:'<code>CacheService.getScriptCache()</code> でキャッシュを取得。<code>put(key,val,秒)</code> で保存、<code>get(key)</code> で取得。最大6時間保持。' },
+   ]
+  },
+ ],
+];
+
+// ============================================================
+// 状態管理
+// ============================================================
+let curLevel = 0;
+let curLessonIdx = 0;
+let curQuestions = [];
+let curQuizIdx = 0;
+let curScore = 0;
+let curAnswers = [];
+
+const prog = JSON.parse(localStorage.getItem('gasLessonProg') || '{}');
+function getP(lv) {
+  if (!prog[lv]) prog[lv] = { done: [] };
+  return prog[lv];
+}
+function saveP() { localStorage.setItem('gasLessonProg', JSON.stringify(prog)); }
+
+// ============================================================
+// 画面切替
+// ============================================================
+const SCREENS = ['screen-menu','screen-lessons','screen-lesson','screen-quiz','screen-lresult'];
+function show(id) {
+  SCREENS.forEach(s => document.getElementById(s).classList.toggle('hidden', s !== id));
+  window.scrollTo(0, 0);
+}
+
+// ============================================================
+// メニュー
+// ============================================================
+function renderMenu() {
+  LESSONS.forEach((lv, i) => {
+    const done = getP(i).done.length;
+    const total = lv.length;
+    const pct = Math.round(done / total * 100);
+    document.getElementById(`lf${i}`).style.width = pct + '%';
+    document.getElementById(`lp${i}`).textContent = `${done}/${total} 完了`;
+  });
+}
+function goMenu() { renderMenu(); show('screen-menu'); }
+
+// ============================================================
+// レッスン一覧
+// ============================================================
+function openLevel(lv) {
+  curLevel = lv;
+  renderLessonList();
+  show('screen-lessons');
+}
+function goLessons() { renderLessonList(); show('screen-lessons'); }
+
+function renderLessonList() {
+  document.getElementById('lessons-title').textContent = LEVELS[curLevel].name;
+  const p = getP(curLevel);
+  document.getElementById('lesson-list').innerHTML = LESSONS[curLevel].map((l, i) => {
+    const done = p.done.includes(i);
+    const locked = i > 0 && !p.done.includes(i - 1);
+    return `
+      <div class="lesson-row ${done?'done':''} ${locked?'locked':''}"
+           onclick="${locked ? "alert('前のレッスンをクリアしてください！')" : `openLesson(${i})`}">
+        <div class="lesson-num">${done ? '✓' : locked ? '🔒' : i+1}</div>
+        <div class="lesson-info">
+          <div class="li-title">${l.title}</div>
+          <div class="li-meta">
+            <span class="li-tag">${l.tag}</span>
+            <span class="li-quiz-badge ${done?'':'pending'}">${done ? '✅ クリア' : `✍️ ${l.quiz.length}問`}</span>
+          </div>
+        </div>
+        <div class="lesson-arrow">${locked ? '' : '›'}</div>
+      </div>`;
+  }).join('');
+}
+
+// ============================================================
+// レッスン本文
+// ============================================================
+function openLesson(idx) {
+  curLessonIdx = idx;
+  renderLesson();
+  show('screen-lesson');
+}
+function backToLesson() { renderLesson(); show('screen-lesson'); }
+
+function renderLesson() {
+  const l = LESSONS[curLevel][curLessonIdx];
+  const total = LESSONS[curLevel].length;
+  document.getElementById('lesson-prog').textContent = `${curLessonIdx + 1} / ${total}`;
+  document.getElementById('lesson-content').innerHTML = `
+    <div class="lesson-card">
+      <div class="lesson-tag-top">${l.tag}</div>
+      <h2>${l.title}</h2>
+      ${l.content}
+    </div>`;
+}
+
+// ============================================================
+// クイズ開始
+// ============================================================
+function startLessonQuiz() {
+  const l = LESSONS[curLevel][curLessonIdx];
+  curQuestions = [...l.quiz];
+  curQuizIdx = 0;
+  curScore = 0;
+  curAnswers = [];
+
+  document.getElementById('qm-lesson').textContent = `${LEVELS[curLevel].short} — ${l.title}`;
+  show('screen-quiz');
+  renderQ();
+}
+
+function renderQ() {
+  const q = curQuestions[curQuizIdx];
+  const total = curQuestions.length;
+  const pct = (curQuizIdx / total) * 100;
+  document.getElementById('prog-fill-q').style.width = pct + '%';
+  document.getElementById('prog-txt-q').textContent = `問 ${curQuizIdx + 1} / ${total}`;
+  document.getElementById('qm-count').textContent = `${curQuizIdx + 1} / ${total}`;
+  document.getElementById('q-cat').textContent = q.cat;
+  document.getElementById('q-text').innerHTML = q.text;
+
+  const codeEl = document.getElementById('q-code');
+  if (q.code) { codeEl.innerHTML = q.code; codeEl.classList.remove('hidden'); }
+  else { codeEl.classList.add('hidden'); }
+
+  document.getElementById('choices').innerHTML = q.choices.map((c, i) => `
+    <button class="choice-btn" onclick="selectAns(${i})">
+      <span class="clabel">${'ABCD'[i]}</span><span>${c}</span>
+    </button>`).join('');
+
+  document.getElementById('exp-box').classList.remove('show');
+  document.getElementById('btn-next-q').classList.remove('show');
+}
+
+function selectAns(sel) {
+  const q = curQuestions[curQuizIdx];
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b => b.disabled = true);
+
+  const ok = sel === q.answer;
+  if (ok) curScore++;
+  btns[sel].classList.add(ok ? 'correct' : 'wrong');
+  if (!ok) btns[q.answer].classList.add('correct');
+  curAnswers.push({ q, sel, ok });
+
+  document.getElementById('exp-body').innerHTML = q.exp;
+  const res = document.getElementById('exp-res');
+  res.className = 'exp-res ' + (ok ? 'ok' : 'ng');
+  res.innerHTML = ok ? '✅ 正解！' : `❌ 不正解。正解は「${q.choices[q.answer]}」`;
+  document.getElementById('exp-box').classList.add('show');
+
+  const nb = document.getElementById('btn-next-q');
+  nb.textContent = curQuizIdx < curQuestions.length - 1 ? '次の問題へ →' : '結果を見る';
+  nb.classList.add('show');
+}
+
+function nextQ() {
+  curQuizIdx++;
+  if (curQuizIdx < curQuestions.length) renderQ();
+  else showLessonResult();
+}
+
+// ============================================================
+// レッスン結果
+// ============================================================
+function showLessonResult() {
+  const total = curQuestions.length;
+  const pct = Math.round(curScore / total * 100);
+  const l = LESSONS[curLevel][curLessonIdx];
+
+  let icon, title, comment;
+  if (pct === 100) {
+    icon='🏆'; title='パーフェクト！';
+    comment='全問正解！このレッスンの内容をしっかり理解できています。次のレッスンへ進みましょう！';
+    markDone();
+  } else if (pct >= 50) {
+    icon='😊'; title='もう少し！';
+    comment='惜しい！解説をもう一度読んで、再チャレンジしてみましょう。';
+  } else {
+    icon='📖'; title='もう一度確認しよう';
+    comment='解説をじっくり読み直してから再挑戦してみてください。';
+  }
+
+  document.getElementById('lr-icon').textContent = icon;
+  document.getElementById('lr-title').textContent = title;
+  document.getElementById('lr-sub').textContent = `${l.title} のクイズ結果`;
+  document.getElementById('sr-num').textContent = curScore;
+  document.getElementById('sr-tot').textContent = `/ ${total} 問`;
+  document.getElementById('lr-comment').textContent = comment;
+
+  // 次レッスンボタン
+  const nextIdx = curLessonIdx + 1;
+  const hasNext = nextIdx < LESSONS[curLevel].length;
+  const nb = document.getElementById('btn-next-lesson');
+  if (pct === 100 && hasNext) {
+    nb.textContent = `次のレッスンへ → ${LESSONS[curLevel][nextIdx].title}`;
+    nb.style.display = 'block';
+  } else if (pct === 100 && !hasNext) {
+    nb.textContent = '🎉 このレベルをクリア！一覧へ';
+    nb.style.display = 'block';
+  } else {
+    nb.style.display = 'none';
+  }
+
+  document.getElementById('review-wrap').classList.add('hidden');
+  show('screen-lresult');
+}
+
+function markDone() {
+  const p = getP(curLevel);
+  if (!p.done.includes(curLessonIdx)) {
+    p.done.push(curLessonIdx);
+    saveP();
+  }
+}
+
+function goNextLesson() {
+  const nextIdx = curLessonIdx + 1;
+  if (nextIdx < LESSONS[curLevel].length) {
+    openLesson(nextIdx);
+  } else {
+    goLessons();
+  }
+}
+
+function retryQuiz() {
+  document.getElementById('review-wrap').classList.add('hidden');
+  startLessonQuiz();
+}
+
+function showReview() {
+  const rw = document.getElementById('review-wrap');
+  rw.classList.toggle('hidden');
+  if (!rw.classList.contains('hidden')) {
+    rw.innerHTML = '<h3 style="font-size:15px;font-weight:700;margin-bottom:12px;">📖 解答の見直し</h3>' +
+      curAnswers.map((a, i) => `
+        <div class="rv-item">
+          <div class="rv-q">Q${i+1}. ${a.q.text}</div>
+          <div class="rv-ans ${a.ok?'rv-ok':'rv-ng'}">${a.ok?'✅':'❌'} あなたの回答: ${a.q.choices[a.sel]}</div>
+          ${!a.ok ? `<div class="rv-ans rv-ok">正解: ${a.q.choices[a.q.answer]}</div>` : ''}
+          <div class="rv-exp">${a.q.exp}</div>
+        </div>`).join('');
+  }
+}
+
+// 初期化
+renderMenu();
+</script>
+</body>
+</html>
