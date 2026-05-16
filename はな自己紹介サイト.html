@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>はな's 自己紹介</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --orange: #FF7A3D;
+      --orange-light: #FFB38A;
+      --orange-pale: #FFF0E8;
+      --green: #5CB85C;
+      --green-light: #A8D5A2;
+      --cream: #FFFBF5;
+      --brown: #5C3D2E;
+      --text: #333;
+      --yellow: #FFD166;
+      --pink: #FF9BAE;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      background: linear-gradient(135deg, var(--orange) 0%, #FF9A5C 50%, var(--yellow) 100%);
+      padding: 60px 20px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 220px; height: 220px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: -40px;
+      width: 280px; height: 280px;
+      background: rgba(255,255,255,0.10);
+      border-radius: 50%;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    .avatar {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 72px;
+      border: 5px solid #fff;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .badge-pdca {
+      position: absolute;
+      bottom: -8px; right: -8px;
+      width: 52px; height: 52px;
+      background: var(--green);
+      border-radius: 50%;
+      border: 3px solid #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .hero-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .hero-catchcopy {
+      font-size: 36px;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.2;
+      text-shadow: 2px 4px 12px rgba(0,0,0,0.15);
+      margin-bottom: 10px;
+    }
+
+    .hero-catchcopy span {
+      color: var(--yellow);
+    }
+
+    .hero-sub {
+      font-size: 14px;
+      color: rgba(255,255,255,0.92);
+      font-weight: 700;
+      background: rgba(255,255,255,0.2);
+      display: inline-block;
+      padding: 6px 20px;
+      border-radius: 50px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ===== HERO TAGS ===== */
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 0 16px;
+    }
+
+    .hero-tag {
+      background: rgba(255,255,255,0.25);
+      color: #fff;
+      border: 1.5px solid rgba(255,255,255,0.5);
+      border-radius: 50px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      backdrop-filter: blur(4px);
+      letter-spacing: 0.3px;
+    }
+
+    /* ===== WAVE ===== */
+    .wave {
+      display: block;
+      width: 100%;
+      height: 50px;
+      background: var(--cream);
+      clip-path: ellipse(55% 100% at 50% 100%);
+      margin-top: -2px;
+    }
+
+    /* ===== SECTIONS ===== */
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    section {
+      padding: 32px 0;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--orange);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(to right, var(--orange-light), transparent);
+      border-radius: 2px;
+    }
+
+    /* ===== CARD ===== */
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(255,122,61,0.08);
+      margin-bottom: 16px;
+    }
+
+    .card-orange {
+      background: var(--orange-pale);
+      border-left: 4px solid var(--orange);
+    }
+
+    .card-green {
+      background: #F0FBF0;
+      border-left: 4px solid var(--green);
+    }
+
+    /* ===== PROFILE GRID ===== */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .profile-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(255,122,61,0.08);
+      transition: transform 0.2s;
+    }
+
+    .profile-item:hover {
+      transform: translateY(-4px);
+    }
+
+    .profile-item .icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .profile-item .label {
+      font-size: 11px;
+      color: #999;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .profile-item .value {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* ===== TAGS ===== */
+    .tag-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background: var(--orange-pale);
+      color: var(--orange);
+      border: 1.5px solid var(--orange-light);
+      border-radius: 50px;
+      padding: 5px 14px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .tag-green {
+      background: #F0FBF0;
+      color: var(--green);
+      border-color: var(--green-light);
+    }
+
+    .tag-blue {
+      background: #EEF4FF;
+      color: #4A7FD4;
+      border-color: #A8C4F0;
+    }
+
+    .keyword-invite {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--orange);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .keyword-group {
+      margin-bottom: 18px;
+    }
+
+    .keyword-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .keyword-label {
+      font-size: 11px;
+      font-weight: 900;
+      color: #aaa;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    /* ===== ABOUT TEXT ===== */
+    .about-text {
+      font-size: 14px;
+      line-height: 1.9;
+      color: #555;
+    }
+
+    .about-text p {
+      margin-bottom: 12px;
+    }
+
+    .highlight {
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    /* ===== TIMELINE ===== */
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--orange), var(--yellow));
+      border-radius: 2px;
+    }
+
+    .tl-item {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .tl-dot {
+      position: absolute;
+      left: -24px;
+      top: 4px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--orange);
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 2px var(--orange-light);
+    }
+
+    .tl-dot.current {
+      background: var(--green);
+      box-shadow: 0 0 0 3px var(--green-light);
+      width: 18px;
+      height: 18px;
+      left: -26px;
+      top: 2px;
+    }
+
+    .tl-label {
+      font-size: 11px;
+      font-weight: 900;
+      color: var(--orange);
+      letter-spacing: 1px;
+      margin-bottom: 3px;
+    }
+
+    .tl-label.current {
+      color: var(--green);
+    }
+
+    .tl-text {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    /* ===== GOALS ===== */
+    .goals-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .goal-item {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 4px 16px rgba(255,122,61,0.08);
+      border-left: 4px solid var(--orange);
+      transition: transform 0.2s;
+    }
+
+    .goal-item:hover {
+      transform: translateX(4px);
+    }
+
+    .goal-num {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--orange-light);
+      line-height: 1;
+      min-width: 32px;
+    }
+
+    .goal-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .goal-icon {
+      font-size: 24px;
+      margin-left: auto;
+    }
+
+    /* ===== CHALLENGE ===== */
+    .challenge-card {
+      background: linear-gradient(135deg, var(--orange) 0%, #FF9A5C 100%);
+      border-radius: 20px;
+      padding: 24px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .challenge-card::before {
+      content: '🔥';
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 64px;
+      opacity: 0.3;
+    }
+
+    .challenge-card h3 {
+      font-size: 16px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .challenge-card p {
+      font-size: 13px;
+      line-height: 1.8;
+      opacity: 0.95;
+    }
+
+    /* ===== PLACES ===== */
+    .places {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .place-tag {
+      background: #fff;
+      border-radius: 50px;
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--brown);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .place-arrow {
+      color: var(--orange);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    /* ===== CLOSING ===== */
+    .closing {
+      background: linear-gradient(135deg, #5CB85C 0%, #82C982 100%);
+      border-radius: 20px;
+      padding: 28px 24px;
+      color: #fff;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .closing::before {
+      content: '';
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 120px; height: 120px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+    }
+
+    .closing p {
+      font-size: 14px;
+      line-height: 1.9;
+      opacity: 0.95;
+    }
+
+    .closing .closing-title {
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    /* ===== SNS ===== */
+    .sns-section {
+      text-align: center;
+      padding-bottom: 40px;
+    }
+
+    .sns-badges {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .sns-badge {
+      background: #fff;
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--orange);
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* ===== DIVIDER ===== */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--orange-light), transparent);
+      margin: 8px 0;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .avatar {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card, .profile-item, .goal-item {
+      animation: fadeInUp 0.5s ease both;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 480px) {
+      .hero-catchcopy { font-size: 28px; }
+      .profile-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="avatar-wrap">
+    <div class="avatar"><img src="はなちゃん_01ステッカー_04.png" alt="はなアイコン"></div>
+  </div>
+  <div class="hero-tags">
+    <span class="hero-tag">🛒 ECマーケ</span>
+    <span class="hero-tag">🎵 TikTok Shop</span>
+    <span class="hero-tag">🛍 楽天・Yahoo・Amazon</span>
+    <span class="hero-tag">🏓 卓球</span>
+    <span class="hero-tag">🀄 麻雀</span>
+    <span class="hero-tag">📍 沖縄→東京</span>
+  </div>
+</section>
+<div class="wave"></div>
+
+<div class="container">
+
+  <!-- ===== ABOUT ===== -->
+  <section>
+    <h2 class="section-title">🙋 わたしについて</h2>
+    <div class="card">
+      <div class="about-text">
+        <p>
+          食品特化の<span class="highlight">ECマーケティング会社</span>で働いており、PDCAを回しながら挑戦し続ける毎日が楽しく、<span class="highlight">本業に全力投球</span>しています🔥
+        </p>
+        <p>
+          20代のうちに<span class="highlight">知識・経験・スキルを磨いて市場価値を上げ、選択肢を増やしたい</span>と思ってます！
+        </p>
+        <p>
+          趣味は<span class="highlight">卓球</span>で、週2日ほど練習しています🏓卓球が大好きすぎて「いつでも練習できる環境を自分で作る」ことが20代の目標です！
+        </p>
+      </div>
+    </div>
+
+    <!-- プロフィールグリッド -->
+    <div class="profile-grid">
+      <div class="profile-item">
+        <span class="icon">🏢</span>
+        <div class="label">お仕事</div>
+        <div class="value">ECマーケ<br>TikTokShop運用</div>
+      </div>
+      <div class="profile-item">
+        <span class="icon">🏓</span>
+        <div class="label">趣味</div>
+        <div class="value">卓球<br>週2日練習</div>
+      </div>
+      <div class="profile-item">
+        <span class="icon">🎓</span>
+        <div class="label">資格</div>
+        <div class="value">管理栄養士</div>
+      </div>
+      <div class="profile-item">
+        <span class="icon">📍</span>
+        <div class="label">現在地</div>
+        <div class="value">東京<br>(1年だけ？)</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== 居住歴 ===== -->
+  <section>
+    <h2 class="section-title">📍 住んできた場所</h2>
+    <div class="card">
+      <div class="places">
+        <span class="place-tag">🌺 沖縄</span>
+        <span class="place-arrow">→</span>
+        <span class="place-tag">🌄 宮崎</span>
+        <span class="place-arrow">→</span>
+        <span class="place-tag">⛩ 京都</span>
+        <span class="place-arrow">→</span>
+        <span class="place-tag">🍜 福岡</span>
+        <span class="place-arrow">→</span>
+        <span class="place-tag">🗼 東京</span>
+      </div>
+      <p style="font-size:13px; color:#888; margin-top:14px; line-height:1.7;">
+        どの場所でも周りに恵まれてスーパーハッピーな人生過ごしてます✌️
+      </p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== タイムライン ===== -->
+  <section>
+    <h2 class="section-title">📅 あゆみ</h2>
+    <div class="card">
+      <div class="timeline">
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">大学1年生</div>
+          <div class="tl-text">コロナ禍で大学に入学。色んな制限があり暇な時にYouTubeを見まくっていたら<strong>学長に出会いました</strong></div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">大学2年生</div>
+          <div class="tl-text">なんとなくリベシティに登録（チャットを眺めているだけ）</div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">大学3年生</div>
+          <div class="tl-text">オフ会に参加し始めてたくさんの人と出会い、たくさん遊んでもらう。<strong>0→1達成！</strong></div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">大学4年生</div>
+          <div class="tl-text">オフ会・麻雀・国試勉強・就活・個人事業と大充実！<br><span style="color:#aaa; font-size:12px;">関西を離れるのが寂しかったです泣</span></div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">社会人1年目</div>
+          <div class="tl-text">福岡で就職！学校給食で半年働いた後、<strong>ECマーケ会社に転職</strong></div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-label">社会人2年目</div>
+          <div class="tl-text"><strong>本業全力投球！！！！</strong></div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot current"></div>
+          <div class="tl-label current">社会人3年目 ← 今ここ！✨</div>
+          <div class="tl-text">6年前には想像できないほど楽しく充実した毎日を過ごしてます！</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== 目標 ===== -->
+  <section>
+    <h2 class="section-title">🎯 20代で叶えたい目標</h2>
+    <div class="goals-grid">
+      <div class="goal-item">
+        <div class="goal-num">01</div>
+        <div class="goal-text">いつでも練習できる環境を自分で作る</div>
+        <div class="goal-icon">🏓</div>
+      </div>
+      <div class="goal-item">
+        <div class="goal-num">02</div>
+        <div class="goal-text">パート＋個人事業で生活できるようになりたい！</div>
+        <div class="goal-icon">💪</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== キーワード ===== -->
+  <section>
+    <h2 class="section-title">💡 キーワード</h2>
+    <p class="keyword-invite">気になるキーワードがあれば、ぜひ話しましょう！🫶</p>
+    <div class="card">
+      <div class="keyword-group">
+        <div class="keyword-label">💼 お仕事</div>
+        <div class="tag-wrap">
+          <span class="tag">ECサイト運営</span>
+          <span class="tag">TikTok Shop</span>
+          <span class="tag">楽天市場</span>
+          <span class="tag">Yahoo!ショッピング</span>
+          <span class="tag">Amazon</span>
+          <span class="tag">SNS運用</span>
+          <span class="tag">インフルエンサーマーケ</span>
+          <span class="tag">食品EC</span>
+          <span class="tag">管理栄養士</span>
+          <span class="tag">Claude</span>
+        </div>
+      </div>
+      <div class="keyword-group">
+        <div class="keyword-label">🎉 趣味・その他</div>
+        <div class="tag-wrap">
+          <span class="tag tag-green">卓球</span>
+          <span class="tag tag-green">麻雀</span>
+        </div>
+      </div>
+      <div class="keyword-group">
+        <div class="keyword-label">📍 住んだことある場所</div>
+        <div class="tag-wrap">
+          <span class="tag tag-blue">🌺 沖縄</span>
+          <span class="tag tag-blue">🌄 宮崎</span>
+          <span class="tag tag-blue">⛩ 京都</span>
+          <span class="tag tag-blue">🍜 福岡</span>
+          <span class="tag tag-blue">🗼 東京</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== クロージング ===== -->
+  <section>
+    <div class="closing">
+      <p class="closing-title">最後に</p>
+      <p>
+        これまで出会ったリベシティの先輩方は、本当に毎日楽しそうでずっと背中を追いかけていたいです🫶✨そして自分自身も後輩にいい背中を見せられるように最高に楽しい毎日を過ごします！
+        「やってみたいを追求する」人生にするために<strong>勉強し行動し続けます！</strong>
+      </p>
+    </div>
+  </section>
+
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  最後までご覧いただきありがとうございます。
+</footer>
+
+</body>
+</html>
