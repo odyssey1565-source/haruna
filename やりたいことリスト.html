@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Bucket List</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f9f6f1;
+      --surface: #ffffff;
+      --text: #1a1a1a;
+      --muted: #999;
+      --accent: #c8a96e;
+      --accent-light: #f0e6d3;
+      --border: #e5ddd0;
+      --danger: #d9534f;
+      --done: #6aab8e;
+      --done-light: #e8f5ee;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-top { text-align: center; padding-bottom: 16px; }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 5vw, 2rem);
+      font-weight: 700;
+    }
+
+    header p.subtitle {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .tabs { display: flex; border-top: 1px solid var(--border); }
+
+    .tab {
+      flex: 1;
+      padding: 12px 8px;
+      text-align: center;
+      font-size: 0.82rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 400;
+      color: var(--muted);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-bottom: 2.5px solid transparent;
+      transition: all 0.18s;
+      letter-spacing: 0.03em;
+    }
+
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .tab-badge {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 10px;
+      font-size: 0.7rem;
+      padding: 1px 7px;
+      margin-left: 4px;
+      font-weight: 500;
+    }
+
+    .tab.active .tab-badge { background: var(--accent); color: #fff; }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    .input-area {
+      max-width: 600px;
+      margin: 20px auto 0;
+      padding: 0 16px;
+    }
+
+    .input-row { display: flex; gap: 10px; }
+
+    .input-row input {
+      flex: 1;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 300;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-row input:focus { border-color: var(--accent); }
+    .input-row input::placeholder { color: #bbb; }
+
+    .btn-add {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 0 22px;
+      font-size: 0.88rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-add:active { transform: scale(0.95); }
+    .btn-add:hover  { background: #b8935a; }
+    .btn-add:disabled { background: #ddd; cursor: not-allowed; }
+
+    .list-area {
+      max-width: 600px;
+      margin: 16px auto 0;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .item {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      animation: fadeIn 0.22s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .item-text {
+      flex: 1;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .btn-achieve {
+      background: var(--done-light);
+      color: var(--done);
+      border: 1.5px solid var(--done);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 0.75rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+
+    .btn-achieve:hover { background: var(--done); color: #fff; }
+
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: #ccc;
+      font-size: 1.1rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .delete-btn:hover { color: var(--danger); }
+
+    /* DONE ITEMS */
+    .done-item {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      animation: fadeIn 0.22s ease;
+    }
+
+    .done-item-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .done-check {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--done);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .done-title {
+      flex: 1;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .done-date {
+      font-size: 0.72rem;
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .done-delete {
+      background: transparent;
+      border: none;
+      color: #ccc;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .done-delete:hover { color: var(--danger); }
+
+    .done-body {
+      border-top: 1px solid var(--border);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .photo-area { position: relative; }
+
+    .photo-preview {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 10px;
+      display: block;
+    }
+
+    .photo-placeholder {
+      width: 100%;
+      height: 90px;
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .photo-placeholder:hover { border-color: var(--accent); color: var(--accent); }
+    .photo-placeholder .ph-icon { font-size: 1.4rem; }
+    .photo-input { display: none; }
+
+    .photo-remove {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .comment-area textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 300;
+      color: var(--text);
+      background: var(--bg);
+      resize: none;
+      outline: none;
+      min-height: 72px;
+      transition: border-color 0.2s;
+    }
+
+    .comment-area textarea:focus { border-color: var(--accent); }
+    .comment-area textarea::placeholder { color: #bbb; }
+
+    .comment-footer { display: flex; justify-content: flex-end; margin-top: 6px; }
+
+    .comment-save {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 18px;
+      font-size: 0.78rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .comment-save:hover { background: #b8935a; }
+
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .empty .icon { font-size: 2.2rem; margin-bottom: 12px; }
+    .empty p { font-size: 0.88rem; line-height: 1.8; }
+
+    /* LOADING */
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1a1a1a;
+      color: #fff;
+      font-size: 0.78rem;
+      padding: 9px 22px;
+      border-radius: 20px;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      white-space: nowrap;
+      letter-spacing: 0.04em;
+      z-index: 100;
+    }
+
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.error { background: var(--danger); }
+
+    /* MODAL */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 50;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 20px 20px 0 0;
+      padding: 28px 20px 40px;
+      width: 100%;
+      max-width: 600px;
+      animation: slideUp 0.25s ease;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .modal h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 4px; }
+    .modal-sub { font-size: 0.78rem; color: var(--muted); margin-bottom: 16px; }
+
+    .modal-item-name {
+      background: var(--accent-light);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      margin-bottom: 18px;
+      word-break: break-word;
+    }
+
+    .modal-photo-label {
+      width: 100%;
+      height: 90px;
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .modal-photo-label:hover { border-color: var(--accent); color: var(--accent); }
+    .modal-photo-label .ph-icon { font-size: 1.4rem; }
+    #modal-photo-input { display: none; }
+
+    #modal-photo-preview {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      display: none;
+    }
+
+    .modal-textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 300;
+      color: var(--text);
+      background: var(--bg);
+      resize: none;
+      outline: none;
+      min-height: 80px;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .modal-textarea:focus { border-color: var(--accent); }
+    .modal-textarea::placeholder { color: #bbb; }
+
+    .modal-actions { display: flex; gap: 10px; }
+
+    .modal-btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-size: 0.9rem;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .modal-btn.cancel { background: var(--bg); color: var(--muted); }
+    .modal-btn.confirm { background: var(--done); color: #fff; }
+    .modal-btn.confirm:hover { background: #5a9a7e; }
+    .modal-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <h1>My Bucket List</h1>
+    <p class="subtitle">やってみたいことリスト</p>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-tab="todo">やりたいことリスト <span class="tab-badge" id="badge-todo">0</span></button>
+    <button class="tab" data-tab="done">達成済み <span class="tab-badge" id="badge-done">0</span></button>
+  </div>
+</header>
+
+<div class="page active" id="page-todo">
+  <div class="input-area">
+    <div class="input-row">
+      <input type="text" id="new-item" placeholder="やってみたいことを入力…" maxlength="200" />
+      <button class="btn-add" id="add-btn">追加</button>
+    </div>
+  </div>
+  <div class="list-area" id="todo-list">
+    <div class="loading"><div class="spinner"></div>読み込み中…</div>
+  </div>
+</div>
+
+<div class="page" id="page-done">
+  <div class="list-area" id="done-list">
+    <div class="loading"><div class="spinner"></div>読み込み中…</div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2>🎉 達成おめでとう！</h2>
+    <p class="modal-sub">写真やコメントを残しておきましょう（任意）</p>
+    <div class="modal-item-name" id="modal-item-name"></div>
+    <label class="modal-photo-label" for="modal-photo-input" id="modal-photo-label">
+      <span class="ph-icon">📷</span>写真を追加
+    </label>
+    <input type="file" id="modal-photo-input" accept="image/*" />
+    <img id="modal-photo-preview" alt="preview" />
+    <textarea class="modal-textarea" id="modal-comment" placeholder="一言コメント（感想、場所、日付など）…"></textarea>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" id="modal-cancel">キャンセル</button>
+      <button class="modal-btn confirm" id="modal-confirm">達成済みに移動</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const SUPABASE_URL = 'https://qsfcccfbsbrcapvwzisq.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFzZmNjY2Zic2JyY2Fwdnd6aXNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzMDQzODYsImV4cCI6MjA5Mzg4MDM4Nn0.TJxBaNLwOnwwJagbg_W22sM1wWuD_Krt82T8Ic0bvNw';
+  const HEADERS = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+
+  async function api(path, method = 'GET', body = null) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+      method,
+      headers: HEADERS,
+      body: body ? JSON.stringify(body) : null
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err);
+    }
+    if (res.status === 204) return null;
+    return res.json();
+  }
+
+  let todoItems = [];
+  let doneItems = [];
+  let pendingAchieveId = null;
+  let pendingPhotoData = null;
+
+  /* ── TOAST ── */
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.toggle('error', isError);
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  function esc(s) {
+    return String(s || '')
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── BADGES ── */
+  function updateBadges() {
+    document.getElementById('badge-todo').textContent = todoItems.length;
+    document.getElementById('badge-done').textContent = doneItems.length;
+  }
+
+  /* ── RENDER TODO ── */
+  function renderTodo() {
+    const el = document.getElementById('todo-list');
+    if (!todoItems.length) {
+      el.innerHTML = `<div class="empty"><div class="icon">✨</div><p>やってみたいことを追加してみましょう！</p></div>`;
+      return;
+    }
+    el.innerHTML = todoItems.map(item => `
+      <div class="item" data-id="${item.id}">
+        <span class="item-text">${esc(item.text)}</span>
+        <button class="btn-achieve" data-action="achieve">達成！</button>
+        <button class="delete-btn" data-action="delete">✕</button>
+      </div>
+    `).join('');
+    updateBadges();
+  }
+
+  /* ── RENDER DONE ── */
+  function renderDone() {
+    const el = document.getElementById('done-list');
+    if (!doneItems.length) {
+      el.innerHTML = `<div class="empty"><div class="icon">🏆</div><p>達成済みのアイテムはまだありません。<br>どんどん挑戦しよう！</p></div>`;
+      return;
+    }
+    el.innerHTML = doneItems.map(item => `
+      <div class="done-item" data-id="${item.id}">
+        <div class="done-item-header">
+          <div class="done-check">✓</div>
+          <span class="done-title">${esc(item.text)}</span>
+          <span class="done-date">${esc(item.date || '')}</span>
+          <button class="done-delete" data-action="delete-done">✕</button>
+        </div>
+        <div class="done-body">
+          <div class="photo-area">
+            ${item.photo
+              ? `<img class="photo-preview" src="${item.photo}" alt="photo" />
+                 <button class="photo-remove" data-action="remove-photo">✕</button>`
+              : `<div class="photo-placeholder" data-action="pick-photo">
+                   <span class="ph-icon">📷</span>写真を追加
+                 </div>`
+            }
+            <input type="file" class="photo-input" accept="image/*" data-action="file-input" />
+          </div>
+          <div class="comment-area">
+            <textarea placeholder="コメントを入力…" data-action="comment-text">${esc(item.comment || '')}</textarea>
+            <div class="comment-footer">
+              <button class="comment-save" data-action="save-comment">保存</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+    updateBadges();
+  }
+
+  /* ── LOAD ── */
+  async function loadAll() {
+    try {
+      const all = await api('items?order=created_at.desc');
+      todoItems = all.filter(i => !i.done);
+      doneItems = all.filter(i => i.done);
+      renderTodo();
+      renderDone();
+      updateBadges();
+    } catch(e) {
+      showToast('読み込みに失敗しました', true);
+      console.error(e);
+    }
+  }
+
+  /* ── ADD ── */
+  document.getElementById('add-btn').addEventListener('click', async () => {
+    const input = document.getElementById('new-item');
+    const text = input.value.trim();
+    if (!text) { input.focus(); return; }
+    const btn = document.getElementById('add-btn');
+    btn.disabled = true;
+    try {
+      const [created] = await api('items', 'POST', { text, done: false });
+      todoItems.unshift(created);
+      renderTodo();
+      input.value = '';
+      input.focus();
+      showToast('✓ 追加しました');
+    } catch(e) {
+      showToast('追加に失敗しました', true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  /* ── TODO EVENTS ── */
+  document.getElementById('todo-list').addEventListener('click', async e => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const id = Number(btn.closest('.item').dataset.id);
+    if (btn.dataset.action === 'achieve') {
+      openModal(id);
+    } else if (btn.dataset.action === 'delete') {
+      if (!confirm('削除しますか？')) return;
+      try {
+        await api(`items?id=eq.${id}`, 'DELETE');
+        todoItems = todoItems.filter(i => i.id !== id);
+        renderTodo();
+        showToast('削除しました');
+      } catch(e) { showToast('削除に失敗しました', true); }
+    }
+  });
+
+  /* ── DONE EVENTS ── */
+  document.getElementById('done-list').addEventListener('click', async e => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    const doneEl = btn.closest('.done-item');
+    const id = Number(doneEl.dataset.id);
+
+    if (btn.dataset.action === 'delete-done') {
+      if (!confirm('達成済みリストから削除しますか？')) return;
+      try {
+        await api(`items?id=eq.${id}`, 'DELETE');
+        doneItems = doneItems.filter(i => i.id !== id);
+        renderDone();
+        showToast('削除しました');
+      } catch(e) { showToast('削除に失敗しました', true); }
+    } else if (btn.dataset.action === 'pick-photo') {
+      doneEl.querySelector('[data-action="file-input"]').click();
+    } else if (btn.dataset.action === 'remove-photo') {
+      try {
+        await api(`items?id=eq.${id}`, 'PATCH', { photo: null });
+        const item = doneItems.find(i => i.id === id);
+        if (item) item.photo = null;
+        renderDone();
+        showToast('写真を削除しました');
+      } catch(e) { showToast('失敗しました', true); }
+    } else if (btn.dataset.action === 'save-comment') {
+      const ta = doneEl.querySelector('[data-action="comment-text"]');
+      try {
+        await api(`items?id=eq.${id}`, 'PATCH', { comment: ta.value });
+        const item = doneItems.find(i => i.id === id);
+        if (item) item.comment = ta.value;
+        showToast('✓ コメントを保存しました');
+      } catch(e) { showToast('保存に失敗しました', true); }
+    }
+  });
+
+  document.getElementById('done-list').addEventListener('change', async e => {
+    const input = e.target.closest('[data-action="file-input"]');
+    if (!input) return;
+    const id = Number(input.closest('.done-item').dataset.id);
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      try {
+        const photoData = ev.target.result;
+        await api(`items?id=eq.${id}`, 'PATCH', { photo: photoData });
+        const item = doneItems.find(i => i.id === id);
+        if (item) item.photo = photoData;
+        renderDone();
+        showToast('✓ 写真を保存しました');
+      } catch(e) { showToast('写真の保存に失敗しました', true); }
+    };
+    reader.readAsDataURL(file);
+  });
+
+  /* ── MODAL ── */
+  function openModal(id) {
+    pendingAchieveId = id;
+    pendingPhotoData = null;
+    const item = todoItems.find(i => i.id === id);
+    document.getElementById('modal-item-name').textContent = item ? item.text : '';
+    document.getElementById('modal-comment').value = '';
+    const preview = document.getElementById('modal-photo-preview');
+    preview.style.display = 'none';
+    preview.src = '';
+    document.getElementById('modal-photo-input').value = '';
+    document.getElementById('modal-photo-label').style.display = 'flex';
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  document.getElementById('modal-photo-input').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      pendingPhotoData = ev.target.result;
+      const preview = document.getElementById('modal-photo-preview');
+      preview.src = pendingPhotoData;
+      preview.style.display = 'block';
+      document.getElementById('modal-photo-label').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('modal-cancel').addEventListener('click', () => {
+    document.getElementById('overlay').classList.remove('open');
+    pendingAchieveId = null;
+  });
+
+  document.getElementById('modal-confirm').addEventListener('click', async () => {
+    if (!pendingAchieveId) return;
+    const item = todoItems.find(i => i.id === pendingAchieveId);
+    if (!item) return;
+    const confirmBtn = document.getElementById('modal-confirm');
+    confirmBtn.disabled = true;
+    const comment = document.getElementById('modal-comment').value.trim();
+    const today = new Date().toLocaleDateString('ja-JP', { year:'numeric', month:'2-digit', day:'2-digit' });
+    try {
+      const [updated] = await api(`items?id=eq.${item.id}`, 'PATCH', {
+        done: true,
+        date: today,
+        photo: pendingPhotoData || null,
+        comment: comment || null
+      });
+      todoItems = todoItems.filter(i => i.id !== item.id);
+      doneItems.unshift(updated);
+      document.getElementById('overlay').classList.remove('open');
+      pendingAchieveId = null;
+      renderTodo();
+      renderDone();
+      switchTab('done');
+      showToast('🎉 達成済みに追加しました！');
+    } catch(e) {
+      showToast('エラーが発生しました', true);
+    } finally {
+      confirmBtn.disabled = false;
+    }
+  });
+
+  /* ── TABS ── */
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + tab));
+  }
+
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => switchTab(t.dataset.tab));
+  });
+
+  /* ── INIT ── */
+  loadAll();
+</script>
+</body>
+</html>
